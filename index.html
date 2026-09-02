@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kuliner POS - Sistem Kasir & Manajemen Kuliner Terpadu</title>
+  <title>Kuliner POS - Sistem Kasir Terpadu</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Lucide Icons CDN -->
@@ -788,10 +788,73 @@
       </div>
 
       <!-- 8. VIEW: PENGATURAN -> PRINTER -->
-      <div id="view-printer" class="hidden h-full overflow-y-auto bg-white rounded-xl border border-slate-200 p-4 space-y-3 max-w-lg">
-        <h3 class="font-bold text-slate-900 text-sm">Konfigurasi Printer Thermal</h3>
-        <p class="text-slate-500">Mendukung format lebar kertas 58mm & 80mm ESC/POS via USB atau Bluetooth.</p>
-        <button onclick="showToast('Sinyal tes printer thermal terkirim!', 'info')" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded">Tes Cetak Printer</button>
+      <div id="view-printer" class="hidden h-full overflow-y-auto bg-white rounded-xl border border-slate-200 p-4 space-y-4 max-w-xl">
+        <div>
+          <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+            <i data-lucide="printer" class="w-4 h-4 text-purple-600"></i> Konfigurasi Printer Thermal Bluetooth & USB
+          </h3>
+          <p class="text-slate-500 text-[11px]">Dukungan langsung printer kasir thermal Bluetooth <strong>RPP02N (58mm ESC/POS)</strong>, RPP02, Zjiang, Panda, dan printer thermal lainnya.</p>
+        </div>
+
+        <!-- Status Box Koneksi Bluetooth RPP02N -->
+        <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
+          <div class="flex items-center justify-between">
+            <div>
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Status Perangkat Bluetooth</span>
+              <div class="flex items-center gap-2 mt-0.5">
+                <span id="printer-status-dot" class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+                <span id="printer-status-text" class="font-bold text-slate-800 text-xs">Belum Terhubung ke RPP02N</span>
+              </div>
+              <p id="printer-device-name" class="text-[10px] text-slate-500 font-mono mt-0.5">Perangkat: Tidak ada</p>
+            </div>
+            <div class="flex gap-1.5">
+              <button onclick="connectBluetoothPrinter()" id="btn-connect-bt" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg shadow-sm flex items-center gap-1.5 text-xs transition">
+                <i data-lucide="bluetooth" class="w-3.5 h-3.5"></i> Hubungkan RPP02N
+              </button>
+              <button onclick="disconnectBluetoothPrinter()" id="btn-disconnect-bt" class="hidden px-2.5 py-1.5 bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold rounded-lg text-xs transition">
+                Putuskan
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 border-t border-slate-200 text-[11px]">
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Ukuran Kertas</label>
+              <select id="cfg-printer-paper" onchange="savePrinterConfig()" class="w-full border p-1.5 rounded-lg bg-white font-medium text-xs">
+                <option value="58" selected>58mm (32 Karakter - RPP02N Standar)</option>
+                <option value="80">80mm (48 Karakter)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Metode Cetak Utama</label>
+              <select id="cfg-printer-driver" onchange="savePrinterConfig()" class="w-full border p-1.5 rounded-lg bg-white font-medium text-xs">
+                <option value="bluetooth_direct" selected>Bluetooth Langsung (Web Bluetooth ESC/POS)</option>
+                <option value="browser_dialog">Dialog Cetak Browser (System Print / Driver)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="pt-2 border-t border-slate-200 space-y-2">
+            <label class="flex items-center gap-2 font-bold text-slate-800 text-xs">
+              <input type="checkbox" id="cfg-printer-autoprint" onchange="savePrinterConfig()" class="rounded text-purple-600" />
+              Otomatis Cetak Struk Setelah Transaksi Selesai
+            </label>
+            <div>
+              <label class="block font-bold text-slate-700 text-[11px] mb-0.5">Pesan Footer Struk</label>
+              <input type="text" id="cfg-printer-footer" onchange="savePrinterConfig()" value="Terima kasih atas kunjungan Anda!" class="w-full border p-1.5 rounded-lg text-xs" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Tombol Aksi Tes Cetak -->
+        <div class="flex flex-wrap gap-2">
+          <button onclick="testPrintThermal()" class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-lg text-xs flex items-center gap-1.5 shadow-sm transition">
+            <i data-lucide="printer" class="w-3.5 h-3.5"></i> Tes Cetak RPP02N (ESC/POS)
+          </button>
+          <button onclick="window.print()" class="px-3.5 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold rounded-lg text-xs flex items-center gap-1.5 transition">
+            <i data-lucide="file-text" class="w-3.5 h-3.5"></i> Tes Cetak Dialog Browser
+          </button>
+        </div>
       </div>
 
       <!-- 8. VIEW: PENGATURAN -> SINKRONISASI DATA -->
@@ -870,7 +933,9 @@
         </div>
       </div>
       <div class="p-2.5 bg-slate-100 border-t flex gap-2">
-        <button onclick="showToast('Struk dikirim ke Printer Kasir', 'success')" class="flex-1 py-1.5 bg-slate-900 text-white font-bold rounded">Print Struk</button>
+        <button onclick="printReceiptDirect()" class="flex-1 py-1.5 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded flex items-center justify-center gap-1.5 text-xs transition">
+          <i data-lucide="printer" class="w-3.5 h-3.5"></i> Cetak ke RPP02N
+        </button>
         <button onclick="document.getElementById('rcpt-modal').classList.add('hidden')" class="px-3 py-1.5 bg-emerald-600 text-white font-bold rounded">OK</button>
       </div>
     </div>
@@ -932,6 +997,16 @@
     let currentFormContext = null;
     let pendingConfirmAction = null;
     let sidebarOpen = true;
+
+    // Web Bluetooth Printer State (RPP02N / 58mm ESC/POS)
+    let bluetoothDevice = null;
+    let bluetoothCharacteristic = null;
+    let printerConfig = {
+      paperWidth: "58",
+      driver: "bluetooth_direct",
+      autoPrint: false,
+      footerText: "Terima kasih atas kunjungan Anda!"
+    };
 
     // RBAC Permissions Matrix
     let rolePermissions = {
@@ -1450,6 +1525,288 @@
       }
 
       document.getElementById("rcpt-modal").classList.remove("hidden");
+
+      // Auto print ke printer RPP02N jika opsi aktif
+      if (printerConfig.autoPrint) {
+        setTimeout(() => {
+          printReceiptDirect();
+        }, 300);
+      }
+    }
+
+    // ==================== BLUETOOTH THERMAL PRINTER RPP02N (ESC/POS) ====================
+    // Daftar UUID GATT Service & Karakteristik Umum Printer Thermal Bluetooth
+    const PRINTER_SERVICES = [
+      '000018f0-0000-1000-8000-00805f9b34fb',
+      '0000ff00-0000-1000-8000-00805f9b34fb',
+      '49535343-fe7d-4ae5-8fa9-9fafd205e455',
+      'e7810a71-73ae-499d-8c15-faa9aef0c3f2',
+      '0000e781-0000-1000-8000-00805f9b34fb'
+    ];
+
+    async function connectBluetoothPrinter() {
+      if (!navigator.bluetooth) {
+        showToast("Web Bluetooth API tidak didukung di browser ini. Gunakan Chrome di HP Android / PC!", "error");
+        return;
+      }
+
+      try {
+        showToast("Mencari printer Bluetooth RPP02N...", "info");
+        
+        // Minta akses perangkat Bluetooth thermal
+        bluetoothDevice = await navigator.bluetooth.requestDevice({
+          filters: [
+            { namePrefix: 'RPP' },
+            { namePrefix: 'Bluetooth' },
+            { namePrefix: 'Printer' },
+            { namePrefix: 'MTP' },
+            { namePrefix: 'POS' }
+          ],
+          optionalServices: PRINTER_SERVICES,
+          acceptAllDevices: false
+        }).catch(async () => {
+          // Fallback cari semua perangkat jika filter prefix tidak cocok
+          return await navigator.bluetooth.requestDevice({
+            acceptAllDevices: true,
+            optionalServices: PRINTER_SERVICES
+          });
+        });
+
+        if (!bluetoothDevice) return;
+
+        showToast(`Menghubungkan ke ${bluetoothDevice.name || 'RPP02N'}...`, "info");
+        bluetoothDevice.addEventListener('gattserverdisconnected', onBluetoothDisconnected);
+
+        const server = await bluetoothDevice.gatt.connect();
+        let characteristicFound = null;
+
+        // Cari service dan characteristic yang dapat menulis data (write / writeWithoutResponse)
+        const services = await server.getPrimaryServices();
+        for (const service of services) {
+          try {
+            const characteristics = await service.getCharacteristics();
+            for (const char of characteristics) {
+              if (char.properties.write || char.properties.writeWithoutResponse) {
+                characteristicFound = char;
+                break;
+              }
+            }
+          } catch (e) {
+            console.warn("Gagal mengecek karakteristik service:", e);
+          }
+          if (characteristicFound) break;
+        }
+
+        if (!characteristicFound) {
+          throw new Error("Karakteristik write ESC/POS tidak ditemukan pada perangkat ini");
+        }
+
+        bluetoothCharacteristic = characteristicFound;
+        updatePrinterUIStatus(true, bluetoothDevice.name || 'RPP02N');
+        showToast(`Berhasil terhubung ke ${bluetoothDevice.name || 'RPP02N'}!`, "success");
+
+      } catch (err) {
+        console.error("Gagal koneksi Bluetooth:", err);
+        showToast(`Koneksi Bluetooth gagal: ${err.message || err}`, "error");
+        updatePrinterUIStatus(false);
+      }
+    }
+
+    function onBluetoothDisconnected() {
+      bluetoothCharacteristic = null;
+      updatePrinterUIStatus(false);
+      showToast("Koneksi printer Bluetooth RPP02N terputus", "info");
+    }
+
+    function disconnectBluetoothPrinter() {
+      if (bluetoothDevice && bluetoothDevice.gatt.connected) {
+        bluetoothDevice.gatt.disconnect();
+      }
+      bluetoothCharacteristic = null;
+      updatePrinterUIStatus(false);
+      showToast("Printer Bluetooth telah diputuskan", "info");
+    }
+
+    function updatePrinterUIStatus(isConnected, deviceName = "") {
+      const dot = document.getElementById("printer-status-dot");
+      const text = document.getElementById("printer-status-text");
+      const devNameEl = document.getElementById("printer-device-name");
+      const btnConnect = document.getElementById("btn-connect-bt");
+      const btnDisconnect = document.getElementById("btn-disconnect-bt");
+
+      if (dot) dot.className = `w-2.5 h-2.5 rounded-full ${isConnected ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}`;
+      if (text) text.innerText = isConnected ? `Terhubung ke ${deviceName}` : "Belum Terhubung ke RPP02N";
+      if (devNameEl) devNameEl.innerText = isConnected ? `Perangkat Aktif: ${deviceName}` : "Perangkat: Tidak ada";
+
+      if (btnConnect) btnConnect.classList.toggle("hidden", isConnected);
+      if (btnDisconnect) btnDisconnect.classList.toggle("hidden", !isConnected);
+      lucide.createIcons();
+    }
+
+    // Generator Perintah Cetak ESC/POS untuk RPP02N (58mm - 32 Karakter per Baris)
+    function buildEscPosReceipt(order) {
+      const ESC = '\x1b';
+      const GS = '\x1d';
+      const lineWidth = parseInt(printerConfig.paperWidth || '58') === 80 ? 48 : 32;
+
+      let commands = '';
+
+      // Reset / Inisialisasi printer
+      commands += ESC + '@';
+
+      // Header Toko (Center, Bold, Double Size)
+      commands += ESC + 'a' + '\x01'; // Center
+      commands += GS + '!' + '\x11';  // Double height & width
+      commands += (document.getElementById("cfg-name")?.value || "WAFFELIN MOZZARELA WAFFLE") + '\n';
+      commands += GS + '!' + '\x00';  // Normal size
+      commands += ESC + 'E' + '\x01'; // Bold ON
+      commands += (document.getElementById("cfg-address")?.value || "Jl. Kuliner No. 88, Jakarta Selatan") + '\n';
+      commands += (document.getElementById("cfg-phone")?.value || "0812-8899-0011") + '\n';
+      commands += ESC + 'E' + '\x00'; // Bold OFF
+      commands += '-'.repeat(lineWidth) + '\n';
+
+      // Metadata Transaksi (Left Align)
+      commands += ESC + 'a' + '\x00'; // Left
+      commands += `No Bon   : ${order.id}\n`;
+      commands += `Waktu    : ${order.time}\n`;
+      commands += `Konsumen : ${order.consumer}\n`;
+      commands += `Kasir    : ${currentUser ? currentUser.name : 'Kasir Utama'}\n`;
+      commands += `Bayar    : ${order.pay}\n`;
+      commands += '-'.repeat(lineWidth) + '\n';
+
+      // Item Pesanan
+      if (order.cartItems && order.cartItems.length > 0) {
+        order.cartItems.forEach(item => {
+          const name = item.name.length > (lineWidth - 10) ? item.name.substring(0, lineWidth - 10) : item.name;
+          const totalStr = `Rp ${(item.price * item.qty).toLocaleString('id-ID')}`;
+          const spaces = Math.max(1, lineWidth - name.length - totalStr.length);
+          commands += name + ' '.repeat(spaces) + totalStr + '\n';
+          commands += `  ${item.qty} x Rp ${item.price.toLocaleString('id-ID')}\n`;
+        });
+      } else {
+        commands += `${order.items}\n`;
+      }
+      commands += '-'.repeat(lineWidth) + '\n';
+
+      // Ringkasan Subtotal, Pajak, Diskon, Total
+      const formatLine = (label, valStr) => {
+        const spaces = Math.max(1, lineWidth - label.length - valStr.length);
+        return label + ' '.repeat(spaces) + valStr + '\n';
+      };
+
+      commands += formatLine("Subtotal", `Rp ${order.subtotal.toLocaleString('id-ID')}`);
+      if (order.tax > 0) commands += formatLine("Pajak PB1 (10%)", `Rp ${order.tax.toLocaleString('id-ID')}`);
+      if (order.disc > 0) commands += formatLine("Diskon", `-Rp ${order.disc.toLocaleString('id-ID')}`);
+      
+      commands += ESC + 'E' + '\x01'; // Bold ON
+      commands += formatLine("TOTAL", `Rp ${order.total.toLocaleString('id-ID')}`);
+      commands += ESC + 'E' + '\x00'; // Bold OFF
+
+      if (order.pay === "Tunai") {
+        commands += formatLine("Bayar Tunai", `Rp ${(order.cash || order.total).toLocaleString('id-ID')}`);
+        commands += formatLine("Kembalian", `Rp ${(order.chg || 0).toLocaleString('id-ID')}`);
+      }
+
+      commands += '-'.repeat(lineWidth) + '\n';
+
+      // Footer Pesan (Center)
+      commands += ESC + 'a' + '\x01'; // Center
+      commands += (printerConfig.footerText || "Terima kasih atas kunjungan Anda!") + '\n';
+      commands += "=== STRUK RESMI KASIR ===\n";
+
+      // Feed paper & cut
+      commands += '\n\n\n\n';
+      commands += GS + 'V' + '\x01'; // Cut paper (jika model printer mendukung auto-cutter)
+
+      return new TextEncoder().encode(commands);
+    }
+
+    // Kirim Byte ESC/POS ke Printer Bluetooth RPP02N dalam Chunks
+    async function sendEscPosToBluetooth(uint8Array) {
+      if (!bluetoothCharacteristic) {
+        throw new Error("Printer Bluetooth belum terhubung");
+      }
+
+      const CHUNK_SIZE = 100; // Ukuran chunk aman untuk BLE transfer
+      for (let i = 0; i < uint8Array.length; i += CHUNK_SIZE) {
+        const chunk = uint8Array.slice(i, i + CHUNK_SIZE);
+        if (bluetoothCharacteristic.writeValueWithoutResponse) {
+          await bluetoothCharacteristic.writeValueWithoutResponse(chunk);
+        } else {
+          await bluetoothCharacteristic.writeValue(chunk);
+        }
+        await new Promise(r => setTimeout(r, 20)); // Jeda 20ms antar chunk
+      }
+    }
+
+    // Cetak Struk Langsung (Bluetooth RPP02N atau Dialog Cetak Browser)
+    async function printReceiptDirect() {
+      if (!lastOrder) {
+        showToast("Tidak ada transaksi untuk dicetak!", "error");
+        return;
+      }
+
+      if (bluetoothCharacteristic && bluetoothDevice && bluetoothDevice.gatt.connected) {
+        try {
+          showToast("Mengirim struk ke printer Bluetooth RPP02N...", "info");
+          const escPosData = buildEscPosReceipt(lastOrder);
+          await sendEscPosToBluetooth(escPosData);
+          showToast("Struk berhasil dicetak di RPP02N!", "success");
+        } catch (err) {
+          console.error("Gagal cetak Bluetooth:", err);
+          showToast(`Gagal mencetak ke RPP02N: ${err.message}. Membuka dialog cetak...`, "error");
+          window.print();
+        }
+      } else {
+        // Jika belum terhubung via bluetooth, tawarkan hubungkan atau gunakan dialog cetak browser
+        showToast("Printer Bluetooth belum tersambung. Menggunakan dialog cetak browser.", "info");
+        window.print();
+      }
+    }
+
+    // Tes Cetak RPP02N
+    async function testPrintThermal() {
+      const mockOrder = {
+        id: "#TEST-001",
+        time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+        consumer: "Offline (Tes Cetak)",
+        items: "1x Mozzarella Waffle, 1x Es Kopi Susu",
+        pay: "Tunai",
+        subtotal: 35000,
+        tax: 3500,
+        disc: 0,
+        total: 38500,
+        cash: 50000,
+        chg: 11500,
+        cartItems: [
+          { name: "Mozzarella Waffle", price: 20000, qty: 1 },
+          { name: "Es Kopi Susu Aren", price: 15000, qty: 1 }
+        ]
+      };
+
+      if (bluetoothCharacteristic && bluetoothDevice && bluetoothDevice.gatt.connected) {
+        try {
+          showToast("Mengirim sinyal tes ke RPP02N...", "info");
+          const escPosData = buildEscPosReceipt(mockOrder);
+          await sendEscPosToBluetooth(escPosData);
+          showToast("Tes cetak printer thermal RPP02N berhasil!", "success");
+        } catch (err) {
+          console.error(err);
+          showToast(`Gagal tes cetak: ${err.message}`, "error");
+        }
+      } else {
+        showToast("Silakan klik tombol 'Hubungkan RPP02N' terlebih dahulu!", "info");
+        connectBluetoothPrinter();
+      }
+    }
+
+    function savePrinterConfig() {
+      printerConfig.paperWidth = document.getElementById("cfg-printer-paper")?.value || "58";
+      printerConfig.driver = document.getElementById("cfg-printer-driver")?.value || "bluetooth_direct";
+      printerConfig.autoPrint = document.getElementById("cfg-printer-autoprint")?.checked ?? false;
+      printerConfig.footerText = document.getElementById("cfg-printer-footer")?.value || "Terima kasih atas kunjungan Anda!";
+      saveLocalState();
+      showToast("Pengaturan printer thermal diperbarui!", "success");
     }
 
     function renderHistory() {
