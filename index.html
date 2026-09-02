@@ -45,6 +45,12 @@
       }
     }
   </style>
+<!-- Pengaturan PWA -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#f59e0b">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 </head>
 <body class="bg-slate-100 font-sans text-slate-800 flex h-screen overflow-hidden text-xs select-none">
 
@@ -3290,5 +3296,13 @@
       }, 1000);
     });
   </script>
+  // Registrasi PWA Service Worker
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then((reg) => console.log('Service Worker PWA aktif:', reg.scope))
+        .catch((err) => console.error('PWA gagal mendaftar:', err));
+    });
+  }
 </body>
 </html>
