@@ -3,20 +3,46 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kuliner POS - Sistem Kasir Terpadu</title>
+  <title>Kuliner POS - Sistem Kasir & Manajemen Kuliner</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
-    ::-webkit-scrollbar { width: 5px; height: 5px; }
-    ::-webkit-scrollbar-track { background: #f8fafc; }
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
     ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
     ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     .receipt-paper {
       background: #ffffff;
       background-image: radial-gradient(#cbd5e1 8%, transparent 9%);
       background-size: 8px 8px;
+    }
+    @media print {
+      @page {
+        size: 58mm auto;
+        margin: 0;
+      }
+      body * { visibility: hidden !important; }
+      #printable-receipt, #printable-receipt * { visibility: visible !important; }
+      #printable-receipt {
+        position: fixed !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 58mm !important;
+        max-width: 58mm !important;
+        margin: 0 !important;
+        padding: 4px 6px !important;
+        font-family: monospace !important;
+        font-size: 9px !important;
+        line-height: 1.2 !important;
+        color: #000 !important;
+        background: #fff !important;
+      }
+      #rcpt-modal {
+        background: transparent !important;
+        padding: 0 !important;
+      }
     }
   </style>
 </head>
@@ -30,7 +56,7 @@
           🍽️
         </div>
         <h1 class="text-xl font-black tracking-wide">KULINER POS</h1>
-        <p class="text-xs text-amber-400 font-semibold mt-0.5">Sistem Kasir, Dapur & Keuangan Terpadu</p>
+        <p class="text-xs text-amber-400 font-semibold mt-0.5">Sistem Kasir, Dapur & Manajemen Terpadu</p>
       </div>
 
       <form onsubmit="handleLogin(event)" class="p-6 space-y-4" autocomplete="off">
@@ -46,47 +72,39 @@
           <label class="block text-slate-700 font-bold mb-1">Password</label>
           <div class="relative">
             <i data-lucide="lock" class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
-            <input type="password" id="login-password" required placeholder="Masukkan password" autocomplete="new-password" class="w-full pl-9 pr-10 py-2 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-amber-500 font-medium" />
-            <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+            <input type="password" id="login-password" required placeholder="Masukkan password" autocomplete="new-password" class="w-full pl-9 pr-9 py-2 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-amber-500 font-medium font-mono" />
+            <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none">
               <i data-lucide="eye" id="toggle-pwd-icon" class="w-4 h-4"></i>
             </button>
           </div>
         </div>
 
-        <button type="submit" class="w-full py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black rounded-lg shadow-md transition flex items-center justify-center gap-2">
-          <i data-lucide="log-in" class="w-4 h-4"></i> Masuk ke Sistem POS
+        <button type="submit" class="w-full py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black rounded-lg shadow-md transition flex items-center justify-center gap-2 text-xs">
+          <i data-lucide="log-in" class="w-4 h-4"></i> Masuk ke Sistem
         </button>
-
-        <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-[10px] text-slate-500 flex items-center justify-between">
-          <span>Koneksi Cloud Google Drive:</span>
-          <span class="text-emerald-600 font-bold flex items-center gap-1">🟢 Siap Terhubung</span>
-        </div>
       </form>
     </div>
   </div>
 
-  <!-- ==================== SIDEBAR ==================== -->
-  <aside id="main-sidebar" class="w-64 bg-slate-900 text-slate-300 flex flex-col shrink-0 border-r border-slate-800 z-30 transition-all duration-300 fixed md:static inset-y-0 left-0 hidden shadow-2xl md:shadow-none">
-    <!-- Header Brand -->
+  <!-- ==================== SIDEBAR NAVIGASI ==================== -->
+  <aside id="main-sidebar" class="w-64 bg-slate-900 text-slate-300 flex flex-col shrink-0 border-r border-slate-800 z-30 hidden md:flex transition-all duration-200">
+    <!-- Header Sidebar -->
     <div class="h-14 flex items-center justify-between px-4 bg-slate-950/70 border-b border-slate-800 shrink-0">
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2.5">
         <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white font-black text-sm shadow">
           🍽️
         </div>
         <div>
-          <h1 class="font-extrabold text-white text-sm tracking-wide leading-none flex items-center gap-1">
-            KULINER POS
-          </h1>
-          <p class="text-[10px] text-slate-400 font-medium">Resto, Cafe & Depot</p>
+          <h1 class="font-extrabold text-white text-xs tracking-wide leading-none">KULINER POS</h1>
+          <p class="text-[10px] text-amber-400 font-medium mt-0.5">Resto & Cafe Hub</p>
         </div>
       </div>
-      <!-- Tombol Tutup Sidebar Mobile / Desktop -->
       <button onclick="toggleSidebar()" class="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition" title="Sembunyikan Sidebar">
         <i data-lucide="panel-left-close" class="w-4 h-4"></i>
       </button>
     </div>
 
-    <!-- Navigation Bar -->
+    <!-- Menu Items -->
     <nav class="flex-1 overflow-y-auto p-2.5 space-y-1">
       <!-- 1. Dashboard -->
       <a href="#" onclick="openView('dashboard', 'Dashboard Ringkasan Usaha')" id="nav-dashboard" class="sidebar-item flex items-center gap-2.5 px-3 py-2 rounded-lg bg-amber-500 text-slate-950 font-bold transition">
@@ -202,7 +220,7 @@
       </div>
     </nav>
 
-    <!-- User Shift Footer & Logout -->
+    <!-- User Footer & Logout -->
     <div class="p-3 bg-slate-950/70 border-t border-slate-800 flex items-center justify-between shrink-0">
       <div class="flex items-center gap-2">
         <div class="w-7 h-7 rounded bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-xs border border-amber-500/30">
@@ -213,32 +231,31 @@
           <p class="text-[10px] text-emerald-400 truncate" id="user-display-role">Super Admin</p>
         </div>
       </div>
-      <button onclick="handleLogout()" class="p-1.5 text-slate-400 hover:text-rose-400 transition" title="Logout Sesi">
+      <button onclick="handleLogout()" class="p-1.5 text-slate-400 hover:text-rose-400 transition" title="Keluar / Logout Sesi">
         <i data-lucide="log-out" class="w-4 h-4"></i>
       </button>
     </div>
   </aside>
 
-  <!-- Mobile Backdrop Overlay when Sidebar is open -->
-  <div id="sidebar-backdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-950/60 z-20 hidden md:hidden backdrop-blur-xs"></div>
+  <!-- Mobile Backdrop Overlay -->
+  <div id="sidebar-backdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-950/60 z-20 hidden md:hidden"></div>
 
   <!-- ==================== MAIN WORKSPACE ==================== -->
   <main id="main-content" class="flex-1 flex flex-col overflow-hidden bg-slate-100 hidden w-full">
     <!-- Header Topbar -->
     <header class="h-14 bg-white border-b border-slate-200 px-3 sm:px-5 flex items-center justify-between shrink-0 shadow-sm z-10">
       <div class="flex items-center gap-2 sm:gap-3">
-        <!-- Tombol Toggle Sidebar -->
-        <button onclick="toggleSidebar()" class="p-2 bg-slate-100 hover:bg-amber-500 hover:text-slate-950 text-slate-700 rounded-lg transition border border-slate-200 flex items-center justify-center shadow-xs" title="Sembunyikan / Tampilkan Sidebar">
+        <button onclick="toggleSidebar()" class="p-2 bg-slate-100 hover:bg-amber-500 hover:text-slate-950 text-slate-700 rounded-lg transition border border-slate-200 flex items-center justify-center shadow-xs" title="Tampilkan/Sembunyikan Sidebar">
           <i data-lucide="menu" class="w-4 h-4"></i>
         </button>
         <div>
-          <h2 id="page-title" class="text-xs sm:text-base font-extrabold text-slate-900 tracking-tight truncate max-w-[150px] sm:max-w-none">Dashboard Ringkasan Usaha</h2>
+          <h2 id="page-title" class="text-xs sm:text-base font-extrabold text-slate-900 tracking-tight truncate max-w-[160px] sm:max-w-none">Dashboard Ringkasan Usaha</h2>
           <span class="bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded text-[9px] sm:text-[10px] border border-amber-200 hidden sm:inline-block" id="header-outlet-tag">WAFFELIN MOZZARELA WAFFLE</span>
         </div>
       </div>
       <div class="flex items-center gap-1.5 sm:gap-3">
-        <!-- Fullscreen Mode Button -->
-        <button onclick="toggleFullScreen()" id="btn-fullscreen" class="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-[11px] font-bold border border-slate-200 flex items-center gap-1 transition" title="Layar Penuh">
+        <!-- Fullscreen Button -->
+        <button onclick="toggleFullScreen()" id="btn-fullscreen" class="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-[11px] font-bold border border-slate-200 flex items-center gap-1 transition" title="Layar Penuh Kiosk">
           <i data-lucide="maximize" class="w-3.5 h-3.5" id="icon-fullscreen"></i>
           <span class="hidden lg:inline">Fullscreen</span>
         </button>
@@ -255,7 +272,9 @@
       </div>
     </header>
 
+    <!-- Content Workspaces Container -->
     <div class="flex-1 overflow-hidden p-2 sm:p-4">
+
       <!-- 1. VIEW: DASHBOARD -->
       <div id="view-dashboard" class="h-full overflow-y-auto space-y-4">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -299,7 +318,7 @@
                     <span id="dash-off-pct">0%</span>
                   </div>
                   <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                    <div class="bg-amber-500 h-full" id="dash-off-bar" style="width: 0%"></div>
+                    <div class="bg-amber-500 h-full transition-all" id="dash-off-bar" style="width: 0%"></div>
                   </div>
                 </div>
                 <div>
@@ -308,7 +327,7 @@
                     <span id="dash-on-pct">0%</span>
                   </div>
                   <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                    <div class="bg-sky-500 h-full" id="dash-on-bar" style="width: 0%"></div>
+                    <div class="bg-sky-500 h-full transition-all" id="dash-on-bar" style="width: 0%"></div>
                   </div>
                 </div>
               </div>
@@ -326,7 +345,7 @@
 
       <!-- 2. VIEW: PENJUALAN -> KASIR / POS -->
       <div id="view-pos" class="hidden h-full flex flex-col lg:flex-row gap-3 overflow-hidden relative">
-        <!-- Switch Tab Khusus Tampilan Layar HP/Tablet Kecil -->
+        <!-- Switch Tab Mobile/Tablet -->
         <div class="lg:hidden flex bg-white border border-slate-200 p-1 rounded-xl shadow-xs shrink-0">
           <button type="button" onclick="setPosMobileTab('catalog')" id="pos-tab-catalog-btn" class="flex-1 py-1.5 rounded-lg bg-amber-500 text-slate-950 font-extrabold text-xs flex items-center justify-center gap-1.5 transition shadow-xs">
             <i data-lucide="utensils" class="w-3.5 h-3.5"></i> 1. Menu Makanan/Minuman
@@ -336,7 +355,7 @@
           </button>
         </div>
 
-        <!-- Katalog Menu Kiri -->
+        <!-- Panel Katalog Menu Kiri -->
         <div id="pos-catalog-panel" class="flex-1 flex flex-col bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden min-h-0">
           <div class="p-2 sm:p-3 border-b border-slate-200 space-y-2 bg-slate-50 shrink-0">
             <div class="flex items-center gap-2">
@@ -351,7 +370,7 @@
           <div id="pos-grid" class="flex-1 overflow-y-auto p-2 sm:p-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-2 sm:gap-3 content-start"></div>
         </div>
 
-        <!-- Bon Pesanan Kanan -->
+        <!-- Panel Bon Pesanan Kanan -->
         <div id="pos-cart-panel" class="hidden lg:flex w-full lg:w-80 xl:w-96 bg-white rounded-xl shadow-sm border border-slate-200 flex-col overflow-hidden shrink-0 min-h-0">
           <div class="p-2.5 sm:p-3 border-b border-slate-200 bg-slate-50 flex justify-between items-center shrink-0">
             <div>
@@ -385,7 +404,7 @@
               </div>
               <div>
                 <label class="block text-[9px] font-bold text-slate-500">Konsumen / Meja</label>
-                <input type="text" id="offline-identifier" value="Konsumen 01" placeholder="Konsumen 01 / Nama" class="w-full bg-white border border-slate-300 rounded p-1 text-[10px] font-semibold" />
+                <input type="text" id="offline-identifier" value="Konsumen 01" placeholder="Konsumen 01 / Meja" class="w-full bg-white border border-slate-300 rounded p-1 text-[10px] font-semibold" />
               </div>
             </div>
 
@@ -435,11 +454,9 @@
         <div class="flex justify-between items-center">
           <div>
             <h3 class="font-bold text-slate-900 text-sm">Riwayat Transaksi Penjualan</h3>
-            <p class="text-[10px] text-slate-400">Daftar log transaksi, pembatalan dan cetak ulang struk</p>
+            <p class="text-[10px] text-slate-400">Daftar log transaksi kasir dan cetak ulang struk</p>
           </div>
-          <div class="flex gap-2">
-            <button onclick="exportHistoryCSV()" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded font-bold flex items-center gap-1"><i data-lucide="download" class="w-3.5 h-3.5"></i> Export CSV</button>
-          </div>
+          <button onclick="exportHistoryCSV()" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded font-bold flex items-center gap-1"><i data-lucide="download" class="w-3.5 h-3.5"></i> Export CSV</button>
         </div>
         <table class="w-full text-left">
           <thead class="bg-slate-50 uppercase text-[10px] font-bold border-b">
@@ -461,7 +478,7 @@
       <div id="view-pembelian-bahan" class="hidden h-full overflow-y-auto bg-white rounded-xl border border-slate-200 p-4 space-y-3">
         <div class="flex justify-between items-center">
           <div>
-            <h3 class="font-bold text-slate-900 text-sm">Pengadaan & Pembelian Bahan Baku</h3>
+            <h3 class="font-bold text-slate-900 text-sm">Pengadaan / Pembelian Bahan Baku</h3>
             <p class="text-[10px] text-slate-400">Pencatatan Purchase Order (PO) & otomatis restock persediaan</p>
           </div>
           <button onclick="openPurchaseModal()" class="px-3 py-1 bg-sky-600 hover:bg-sky-700 text-white rounded font-bold flex items-center gap-1"><i data-lucide="plus" class="w-3.5 h-3.5"></i> + Beli Bahan (PO)</button>
@@ -511,7 +528,7 @@
         <div class="flex justify-between items-center">
           <div>
             <h3 class="font-bold text-slate-900 text-sm">Daftar Menu Produk</h3>
-            <p class="text-[10px] text-slate-400">Master menu produk, penetapan harga jual dan HPP</p>
+            <p class="text-[10px] text-slate-400">Master menu produk, penetapan harga jual dan estimasi HPP</p>
           </div>
           <button onclick="openProductModal()" class="px-3 py-1 bg-amber-500 hover:bg-amber-600 text-white rounded font-bold flex items-center gap-1"><i data-lucide="plus" class="w-3.5 h-3.5"></i> + Menu Baru</button>
         </div>
@@ -548,7 +565,7 @@
         <div class="flex justify-between items-center">
           <div>
             <h3 class="font-bold text-slate-900 text-sm">Resep & BOM Komposisi Bahan</h3>
-            <p class="text-[10px] text-slate-400">Rumus bahan baku untuk pengurangan stok otomatis saat kasir bertransaksi</p>
+            <p class="text-[10px] text-slate-400">Rumus bahan baku dapur untuk pengurangan stok otomatis saat kasir bertransaksi</p>
           </div>
           <button onclick="openRecipeModal()" class="px-3 py-1 bg-orange-600 hover:bg-orange-700 text-white rounded font-bold flex items-center gap-1"><i data-lucide="plus" class="w-3.5 h-3.5"></i> + Buat/Edit Resep</button>
         </div>
@@ -692,7 +709,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div class="p-3 bg-slate-50 border rounded-lg">
             <h4 class="font-bold text-slate-900">Kasir / POS</h4>
-            <p class="text-slate-500 mt-1">Mengoperasikan penjualan kasir, cetak struk, dan diskon promo standar.</p>
+            <p class="text-slate-500 mt-1">Mengoperasikan penjualan kasir, cetak struk, diskon promo standar, dan konfigurasi printer thermal RPP02N.</p>
           </div>
           <div class="p-3 bg-slate-50 border rounded-lg">
             <h4 class="font-bold text-slate-900">Admin Gudang & Menu</h4>
@@ -748,11 +765,11 @@
           <label class="flex items-center gap-2 font-bold text-slate-800">
             <input type="checkbox" id="cfg-tax-active" onchange="calculateCart()" /> Aktifkan Pajak Restoran PB1 (10%)
           </label>
-          <p class="text-slate-500 text-[10px]">Pajak otomatis dihitung dari subtotal item di layar kasir dan tercantum di struk.</p>
+          <p class="text-slate-500 text-[10px]">Pajak otomatis dihitung dari subtotal item di layar kasir dan tercantum di struk (bawaan tidak aktif).</p>
         </div>
       </div>
 
-      <!-- 8. VIEW: PENGATURAN -> DISKON & PROMO (PINDAHAN BARU DARI PENGATURAN) -->
+      <!-- 8. VIEW: PENGATURAN -> DISKON & PROMO -->
       <div id="view-diskon-promo" class="hidden h-full overflow-y-auto bg-white rounded-xl border border-slate-200 p-4 space-y-3">
         <div class="flex justify-between items-center">
           <div>
@@ -788,87 +805,56 @@
       </div>
 
       <!-- 8. VIEW: PENGATURAN -> PRINTER -->
-      <div id="view-printer" class="hidden h-full overflow-y-auto bg-white rounded-xl border border-slate-200 p-4 space-y-4 max-w-xl">
+      <div id="view-printer" class="hidden h-full overflow-y-auto bg-white rounded-xl border border-slate-200 p-4 space-y-4 max-w-lg">
         <div>
-          <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
-            <i data-lucide="printer" class="w-4 h-4 text-purple-600"></i> Konfigurasi Printer Thermal Bluetooth & USB
-          </h3>
-          <p class="text-slate-500 text-[11px]">Dukungan langsung printer kasir thermal Bluetooth <strong>RPP02N (58mm ESC/POS)</strong>, RPP02, Zjiang, Panda, dan printer thermal lainnya.</p>
+          <h3 class="font-bold text-slate-900 text-sm">Konfigurasi Printer Thermal 58mm (RPP02N)</h3>
+          <p class="text-slate-500 mt-0.5">Koneksikan printer thermal Bluetooth RPP02N menggunakan Web Bluetooth API atau cetak cepat via System Print Driver.</p>
         </div>
 
-        <!-- Status Box Koneksi Bluetooth RPP02N -->
         <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
           <div class="flex items-center justify-between">
-            <div>
-              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Status Perangkat Bluetooth</span>
-              <div class="flex items-center gap-2 mt-0.5">
-                <span id="printer-status-dot" class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
-                <span id="printer-status-text" class="font-bold text-slate-800 text-xs">Belum Terhubung ke RPP02N</span>
-              </div>
-              <p id="printer-device-name" class="text-[10px] text-slate-500 font-mono mt-0.5">Perangkat: Tidak ada</p>
-            </div>
-            <div class="flex gap-1.5">
-              <button onclick="connectBluetoothPrinter()" id="btn-connect-bt" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg shadow-sm flex items-center gap-1.5 text-xs transition">
-                <i data-lucide="bluetooth" class="w-3.5 h-3.5"></i> Hubungkan RPP02N
-              </button>
-              <button onclick="disconnectBluetoothPrinter()" id="btn-disconnect-bt" class="hidden px-2.5 py-1.5 bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold rounded-lg text-xs transition">
-                Putuskan
-              </button>
-            </div>
+            <span class="font-bold text-slate-700">Status Bluetooth RPP02N:</span>
+            <span id="printer-bt-status" class="px-2 py-0.5 rounded-full font-bold text-[10px] bg-slate-200 text-slate-700">Tidak Terhubung</span>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 border-t border-slate-200 text-[11px]">
-            <div>
-              <label class="block font-bold text-slate-700 mb-1">Ukuran Kertas</label>
-              <select id="cfg-printer-paper" onchange="savePrinterConfig()" class="w-full border p-1.5 rounded-lg bg-white font-medium text-xs">
-                <option value="58" selected>58mm (32 Karakter - RPP02N Standar)</option>
-                <option value="80">80mm (48 Karakter)</option>
-              </select>
-            </div>
-            <div>
-              <label class="block font-bold text-slate-700 mb-1">Metode Cetak Utama</label>
-              <select id="cfg-printer-driver" onchange="savePrinterConfig()" class="w-full border p-1.5 rounded-lg bg-white font-medium text-xs">
-                <option value="bluetooth_direct" selected>Bluetooth Langsung (Web Bluetooth ESC/POS)</option>
-                <option value="browser_dialog">Dialog Cetak Browser (System Print / Driver)</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="pt-2 border-t border-slate-200 space-y-2">
-            <label class="flex items-center gap-2 font-bold text-slate-800 text-xs">
-              <input type="checkbox" id="cfg-printer-autoprint" onchange="savePrinterConfig()" class="rounded text-purple-600" />
-              Otomatis Cetak Struk Setelah Transaksi Selesai
-            </label>
-            <div>
-              <label class="block font-bold text-slate-700 text-[11px] mb-0.5">Pesan Footer Struk</label>
-              <input type="text" id="cfg-printer-footer" onchange="savePrinterConfig()" value="Terima kasih atas kunjungan Anda!" class="w-full border p-1.5 rounded-lg text-xs" />
-            </div>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="connectRPP02N()" id="btn-connect-printer" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg shadow flex items-center gap-1.5 transition">
+              <i data-lucide="bluetooth" class="w-4 h-4"></i> Hubungkan RPP02N
+            </button>
+            <button onclick="disconnectRPP02N()" id="btn-disconnect-printer" class="hidden px-3 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-lg shadow transition">
+              Putuskan
+            </button>
+            <button onclick="testPrintBluetooth()" class="px-3 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-lg shadow flex items-center gap-1.5 transition">
+              <i data-lucide="printer" class="w-4 h-4"></i> Tes Cetak Bluetooth
+            </button>
+            <button onclick="testPrintSystemDialog()" class="px-3 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold rounded-lg transition" title="Cetak melalui driver printer bawaan">
+              Tes Dialog Cetak 58mm
+            </button>
           </div>
         </div>
 
-        <!-- Tombol Aksi Tes Cetak -->
-        <div class="flex flex-wrap gap-2">
-          <button onclick="testPrintThermal()" class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-lg text-xs flex items-center gap-1.5 shadow-sm transition">
-            <i data-lucide="printer" class="w-3.5 h-3.5"></i> Tes Cetak RPP02N (ESC/POS)
-          </button>
-          <button onclick="window.print()" class="px-3.5 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold rounded-lg text-xs flex items-center gap-1.5 transition">
-            <i data-lucide="file-text" class="w-3.5 h-3.5"></i> Tes Cetak Dialog Browser
-          </button>
+        <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 space-y-1">
+          <p class="font-bold flex items-center gap-1"><i data-lucide="info" class="w-4 h-4"></i> Penanganan Koneksi & Cetak 58mm:</p>
+          <ul class="list-disc list-inside space-y-0.5 text-[10px] text-amber-800">
+            <li><strong>Filter Bertingkat:</strong> Sistem otomatis memindai printer dengan nama prefix RPP/POS/MTP, lalu beralih ke mode semua perangkat jika belum terdeteksi.</li>
+            <li><strong>Perizinan:</strong> Pastikan Bluetooth &amp; Izin Lokasi (GPS) aktif di ponsel Android agar Chrome dapat memindai perangkat.</li>
+            <li><strong>Fallback Otomatis:</strong> Jika browser tidak mendukung Web Bluetooth (misal Safari di iOS) atau pemindaian dibatalkan, cetak struk otomatis dialihkan ke <em>Dialog Cetak Driver Sistem 58mm</em> tanpa gangguan.</li>
+          </ul>
         </div>
       </div>
 
       <!-- 8. VIEW: PENGATURAN -> SINKRONISASI DATA -->
       <div id="view-sinkronisasi" class="hidden h-full overflow-y-auto bg-white rounded-xl border border-slate-200 p-4 space-y-3 max-w-lg">
-        <h3 class="font-bold text-slate-900 text-sm">Sinkronisasi Data Cloud & Google Drive</h3>
-        <p class="text-slate-500">Endpoint Google Apps Script terhubung untuk otomatisasi backup database ke Google Sheets.</p>
+        <h3 class="font-bold text-slate-900 text-sm">Sinkronisasi Cloud Google Drive & Spreadsheet</h3>
         <div>
-          <label class="block font-bold text-slate-600">Google Apps Script Web App URL</label>
+          <label class="block font-bold text-slate-600 mb-0.5">Google Apps Script Web App URL</label>
           <input type="text" id="cfg-script-url" value="https://script.google.com/macros/s/AKfycbz7Tg0cMTXprfPbAZmtrPx6PUsnm5pYZjCJ3zBmZsV_KOhnjEZ815RCxMKEoMvybjr5Fw/exec" class="w-full border p-1.5 rounded font-mono text-[10px]" />
         </div>
-        <div class="flex gap-2">
+        <div class="flex flex-wrap gap-2">
           <button onclick="saveApiUrl()" class="px-3 py-1.5 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded">Simpan Endpoint</button>
-          <button onclick="fetchDataFromDrive()" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded">Tarik dari Drive</button>
-          <button onclick="exportBackupJSON()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded">Unduh Backup JSON</button>
+          <button onclick="fetchDataFromDrive(false)" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded">Tarik Data dari Drive</button>
+          <button onclick="syncAllToDrive()" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black rounded">Kirim Semua ke Drive</button>
+          <button onclick="exportBackupJSON()" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded">Unduh JSON</button>
         </div>
       </div>
 
@@ -895,21 +881,21 @@
             <span>Kembalian:</span><span id="cash-change" class="text-emerald-600">Rp 0</span>
           </div>
         </div>
-        <button onclick="finishTransaction()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-lg shadow transition">
+        <button onclick="finishTransaction()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black rounded-lg shadow transition">
           Selesaikan Transaksi & Cetak
         </button>
       </div>
     </div>
   </div>
 
-  <!-- ==================== MODAL: CETAK STRUK ==================== -->
+  <!-- ==================== MODAL: STRUK KASIR ==================== -->
   <div id="rcpt-modal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-xl shadow-2xl w-full max-w-xs overflow-hidden flex flex-col max-h-[90vh]">
       <div class="p-2.5 bg-slate-900 text-white flex justify-between items-center text-xs font-bold">
         <span>Struk Transaksi</span>
         <button onclick="document.getElementById('rcpt-modal').classList.add('hidden')"><i data-lucide="x" class="w-4 h-4"></i></button>
       </div>
-      <div class="p-4 overflow-y-auto receipt-paper font-mono text-[10px] space-y-2 text-slate-900">
+      <div id="printable-receipt" class="p-4 overflow-y-auto receipt-paper font-mono text-[10px] space-y-2 text-slate-900">
         <div class="text-center">
           <p class="font-black text-xs" id="rcpt-store">WAFFELIN MOZZARELA WAFFLE</p>
           <p id="rcpt-addr">Jl. Kuliner No. 88, Jakarta Selatan</p>
@@ -933,61 +919,54 @@
         </div>
       </div>
       <div class="p-2.5 bg-slate-100 border-t flex gap-2">
-        <button onclick="printReceiptDirect()" class="flex-1 py-1.5 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded flex items-center justify-center gap-1.5 text-xs transition">
-          <i data-lucide="printer" class="w-3.5 h-3.5"></i> Cetak ke RPP02N
+        <button onclick="printReceiptDirect()" class="flex-1 py-1.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded flex items-center justify-center gap-1">
+          <i data-lucide="printer" class="w-3.5 h-3.5"></i> Cetak Struk
         </button>
         <button onclick="document.getElementById('rcpt-modal').classList.add('hidden')" class="px-3 py-1.5 bg-emerald-600 text-white font-bold rounded">OK</button>
       </div>
     </div>
   </div>
 
-  <!-- ==================== MODAL: DEDICATED FORM MODAL ==================== -->
+  <!-- ==================== MODAL FORM DINAMIS (CRUD) ==================== -->
   <div id="app-form-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-200 animate-in fade-in zoom-in-95">
-      <div class="p-3.5 bg-slate-900 text-white flex justify-between items-center">
-        <h3 id="form-modal-title" class="font-bold text-xs flex items-center gap-1.5">
-          <i data-lucide="edit-3" class="w-4 h-4 text-amber-400"></i> Form Data
-        </h3>
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+      <div class="p-3 bg-slate-900 text-white flex justify-between items-center">
+        <h3 class="font-bold text-xs" id="form-modal-title">Formulir Data</h3>
         <button onclick="closeAppModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
       </div>
-      <form id="app-dynamic-form" onsubmit="handleFormSubmit(event)" class="p-4 space-y-3">
-        <div id="form-modal-fields" class="space-y-2.5">
-          <!-- Dynamic form inputs injected here -->
-        </div>
-        <div class="pt-3 border-t border-slate-200 flex justify-end gap-2">
-          <button type="button" onclick="closeAppModal()" class="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-lg text-xs">Batal</button>
-          <button type="submit" id="form-modal-submit-btn" class="px-4 py-1.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-lg text-xs shadow">Simpan Data</button>
+      <form id="form-modal-element" onsubmit="handleFormSubmit(event)" class="p-4 space-y-2.5">
+        <div id="form-modal-fields" class="space-y-2.5 max-h-[70vh] overflow-y-auto pr-1"></div>
+        <div class="pt-2 flex justify-end gap-2 border-t border-slate-200">
+          <button type="button" onclick="closeAppModal()" class="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 font-bold rounded text-slate-700">Batal</button>
+          <button type="submit" id="form-modal-submit-btn" class="px-4 py-1.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black rounded shadow">Simpan Data</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- ==================== MODAL: CONFIRMATION DIALOG ==================== -->
+  <!-- ==================== MODAL KONFIRMASI HAPUS ==================== -->
   <div id="app-confirm-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-xs overflow-hidden border border-slate-200 p-4 space-y-3 animate-in fade-in">
-      <div class="flex items-center gap-2.5 text-rose-600">
-        <div class="w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center">
-          <i data-lucide="alert-triangle" class="w-4 h-4"></i>
-        </div>
-        <h4 class="font-black text-sm text-slate-900">Konfirmasi Hapus</h4>
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-xs overflow-hidden p-4 space-y-3 text-center">
+      <div class="w-10 h-10 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto text-lg font-bold">
+        ⚠️
       </div>
-      <p id="confirm-modal-msg" class="text-xs text-slate-600 font-medium">Apakah Anda yakin ingin menghapus data ini?</p>
-      <div class="pt-2 flex justify-end gap-2">
-        <button type="button" onclick="closeConfirmModal()" class="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-lg text-xs">Batal</button>
-        <button type="button" id="confirm-modal-action-btn" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-lg text-xs">Hapus Sekarang</button>
+      <div>
+        <h4 class="font-bold text-slate-900">Konfirmasi Hapus</h4>
+        <p class="text-[11px] text-slate-500 mt-1" id="confirm-modal-msg">Apakah Anda yakin ingin menghapus data ini?</p>
+      </div>
+      <div class="flex gap-2 pt-2">
+        <button onclick="closeConfirmModal()" class="flex-1 py-1.5 bg-slate-200 hover:bg-slate-300 font-bold rounded text-slate-700">Batal</button>
+        <button id="confirm-modal-action-btn" class="flex-1 py-1.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded">Ya, Hapus</button>
       </div>
     </div>
   </div>
 
-  <!-- Toast Container -->
+  <!-- Toast Notification Container -->
   <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-1.5 pointer-events-none"></div>
 
-  <!-- ==================== LOGIC JAVASCRIPT ==================== -->
   <script>
-    // Endpoint Google Apps Script
+    // ==================== STATE VARIABEL UTAMA ====================
     let GOOGLE_DRIVE_API_URL = "https://script.google.com/macros/s/AKfycbz7Tg0cMTXprfPbAZmtrPx6PUsnm5pYZjCJ3zBmZsV_KOhnjEZ815RCxMKEoMvybjr5Fw/exec";
-
-    // State Aplikasi
     let currentUser = null;
     let currentCategory = "Semua";
     let consumerType = "Offline";
@@ -995,41 +974,16 @@
     let cart = [];
     let lastOrder = null;
     let currentFormContext = null;
-    let pendingConfirmAction = null;
-    let sidebarOpen = true;
 
-    // Web Bluetooth Printer State (RPP02N / 58mm ESC/POS)
-    let bluetoothDevice = null;
-    let bluetoothCharacteristic = null;
-    let printerConfig = {
-      paperWidth: "58",
-      driver: "bluetooth_direct",
-      autoPrint: false,
-      footerText: "Terima kasih atas kunjungan Anda!"
-    };
-
-    // RBAC Permissions Matrix
-    let rolePermissions = {
-      "Kasir / POS": ["dashboard", "penjualan", "pos", "riwayat-penjualan"],
-      "Admin Gudang & Menu": ["pembelian", "produk", "persediaan", "keuangan"],
-      "Owner / Super Admin": ["dashboard", "penjualan", "pembelian", "produk", "persediaan", "keuangan", "pengguna", "pengaturan"]
-    };
-
-    const modulesList = [
-      { id: "dashboard", name: "Dashboard Usaha" },
-      { id: "penjualan", name: "Penjualan (POS, Riwayat)" },
-      { id: "pembelian", name: "Pembelian (Bahan, Supplier, PO)" },
-      { id: "produk", name: "Produk (Menu, Kategori, Resep BOM)" },
-      { id: "persediaan", name: "Persediaan (Stok, Opname)" },
-      { id: "keuangan", name: "Keuangan (Beban, HPP, Laba Rugi)" },
-      { id: "pengguna", name: "Pengguna & Manajemen Hak Akses" },
-      { id: "pengaturan", name: "Pengaturan Profil, Pajak, Diskon & Cloud" }
-    ];
+    // Bluetooth RPP02N
+    let btDevice = null;
+    let btServer = null;
+    let btCharacteristic = null;
 
     // Database Master
-    let categories = ["Semua", "Makanan", "Minuman", "Camilan", "Paket"];
+    let categories = ["Semua", "Waffle", "Minuman", "Snack"];
     let promos = [
-      { id: "p1", name: "Diskon 10%", type: "pct", val: 0.10, active: true },
+      { id: "p1", name: "Diskon Promo 10%", type: "pct", val: 0.10, active: true },
       { id: "p2", name: "Potongan Rp 5.000", type: "nom", val: 5000, active: true }
     ];
     let paymentMethods = [
@@ -1038,83 +992,184 @@
       { id: "pay-3", name: "Debit", icon: "💳", type: "card", active: true }
     ];
     let products = [
-      { id: 1, code: "MKN-01", name: "Ayam Bakar Bumbu Rujak", category: "Makanan", hpp: 14000, price: 28000, icon: "🍗", stockReady: 25 },
-      { id: 2, code: "MKN-02", name: "Nasi Goreng Spesial", category: "Makanan", hpp: 12000, price: 25000, icon: "🍳", stockReady: 30 },
-      { id: 3, code: "MNM-01", name: "Es Kopi Susu Aren", category: "Minuman", hpp: 6000, price: 18000, icon: "☕", stockReady: 50 },
-      { id: 4, code: "MNM-02", name: "Es Teh Manis Jasmine", category: "Minuman", hpp: 1500, price: 6000, icon: "🧋", stockReady: 100 },
-      { id: 5, code: "CML-01", name: "Kentang Goreng Keju", category: "Camilan", hpp: 7000, price: 15000, icon: "🍟", stockReady: 20 },
-      { id: 6, code: "PKT-01", name: "Paket Nasi Ayam + Es Teh", category: "Paket", hpp: 15500, price: 30000, icon: "🍱", stockReady: 15 }
+      { id: 1, code: "WFL-01", name: "Mozzarella Waffle Original", category: "Waffle", hpp: 12000, price: 25000, icon: "🧇" },
+      { id: 2, code: "WFL-02", name: "Choco Cheese Waffle", category: "Waffle", hpp: 14000, price: 28000, icon: "🧇" },
+      { id: 3, code: "MNM-01", name: "Es Kopi Susu Gula Aren", category: "Minuman", hpp: 6000, price: 18000, icon: "☕" },
+      { id: 4, code: "MNM-02", name: "Matcha Latte Ice", category: "Minuman", hpp: 7000, price: 20000, icon: "🍵" },
+      { id: 5, code: "SNK-01", name: "Kentang Goreng Keju", category: "Snack", hpp: 6000, price: 15000, icon: "🍟" }
     ];
     let inventory = [
-      { id: 1, name: "Daging Ayam", unit: "Kg", stock: 15.0, min: 5.0, status: "Aman" },
-      { id: 2, name: "Beras", unit: "Kg", stock: 25.0, min: 10.0, status: "Aman" },
-      { id: 3, name: "Susu UHT", unit: "Liter", stock: 3.0, min: 5.0, status: "Kritis" },
-      { id: 4, name: "Kopi House Blend", unit: "Kg", stock: 6.0, min: 2.0, status: "Aman" },
-      { id: 5, name: "Gula Aren", unit: "Liter", stock: 8.0, min: 3.0, status: "Aman" }
+      { id: 1, name: "Tepung Waffle Premix", unit: "Kg", stock: 15.0, min: 5.0, status: "Aman" },
+      { id: 2, name: "Keju Mozzarella Blok", unit: "Kg", stock: 8.0, min: 3.0, status: "Aman" },
+      { id: 3, name: "Susu UHT", unit: "Liter", stock: 2.0, min: 4.0, status: "Kritis" },
+      { id: 4, name: "Biji Kopi House Blend", unit: "Kg", stock: 5.0, min: 2.0, status: "Aman" }
     ];
     let suppliers = [
-      { id: 1, name: "PT Segar Poultry", category: "Daging Unggas", phone: "0812-1111-2222", address: "Jakarta" },
-      { id: 2, name: "CV Fresh Dairy", category: "Susu & Diary", phone: "0813-3333-4444", address: "Bogor" }
+      { id: 1, name: "PT Sumber Dairy Nusantara", category: "Keju & Susu", phone: "0812-1111-2222", address: "Jakarta Barat" },
+      { id: 2, name: "CV Bahan Pastry Mandiri", category: "Tepung & Premix", phone: "0813-3333-4444", address: "Tangerang" }
     ];
     let recipes = [
-      { productCode: "MKN-01", items: [{ matId: 1, matName: "Daging Ayam", qty: 0.25, unit: "Kg" }] },
-      { productCode: "MNM-01", items: [{ matId: 3, matName: "Susu UHT", qty: 0.15, unit: "Liter" }, { matId: 4, matName: "Kopi House Blend", qty: 0.02, unit: "Kg" }, { matId: 5, matName: "Gula Aren", qty: 0.03, unit: "Liter" }] }
+      { productCode: "WFL-01", menuName: "Mozzarella Waffle Original", items: [{ matId: 1, matName: "Tepung Waffle Premix", qty: 0.15, unit: "Kg" }, { matId: 2, matName: "Keju Mozzarella Blok", qty: 0.08, unit: "Kg" }] },
+      { productCode: "MNM-01", menuName: "Es Kopi Susu Gula Aren", items: [{ matId: 3, matName: "Susu UHT", qty: 0.15, unit: "Liter" }, { matId: 4, matName: "Biji Kopi House Blend", qty: 0.02, unit: "Kg" }] }
     ];
     let users = [
       { id: 1, name: "Owner Toko", username: "owner", password: "123", role: "Owner / Super Admin", status: "Aktif" },
       { id: 2, name: "Kasir Utama", username: "kasir", password: "123", role: "Kasir / POS", status: "Aktif" },
-      { id: 3, name: "Admin Resto", username: "admin", password: "123", role: "Admin Gudang & Menu", status: "Aktif" }
+      { id: 3, name: "Admin Gudang", username: "admin", password: "123", role: "Admin Gudang & Menu", status: "Aktif" }
     ];
+    let rolePermissions = {
+      "Kasir / POS": ["dashboard", "pos", "riwayat-penjualan", "printer"],
+      "Admin Gudang & Menu": ["dashboard", "pembelian-bahan", "supplier", "riwayat-pembelian", "daftar-produk", "kategori-produk", "resep-komposisi", "stok-bahan", "stock-opname", "printer"]
+    };
+    const modulesList = [
+      { id: "dashboard", name: "Dashboard Usaha" },
+      { id: "pos", name: "Kasir / POS" },
+      { id: "riwayat-penjualan", name: "Riwayat Penjualan" },
+      { id: "pembelian-bahan", name: "Pengadaan Bahan (PO)" },
+      { id: "supplier", name: "Supplier Mitra" },
+      { id: "riwayat-pembelian", name: "Riwayat Pembelian" },
+      { id: "daftar-produk", name: "Daftar Menu Produk" },
+      { id: "kategori-produk", name: "Kategori Produk" },
+      { id: "resep-komposisi", name: "Resep BOM Dapur" },
+      { id: "stok-bahan", name: "Stok Bahan Baku" },
+      { id: "stock-opname", name: "Stock Opname Fisik" },
+      { id: "keuangan", name: "Laporan Keuangan & Beban" },
+      { id: "printer", name: "Konfigurasi Printer Thermal (RPP02N)" }
+    ];
+
     let transactions = [];
     let purchases = [];
-    let expenses = [
-      { id: "EXP-1", date: "2026-09-01", category: "Listrik & Air", note: "Token Listrik Dapur", amount: 250000 }
-    ];
     let opnames = [];
+    let expenses = [];
 
-    // ==================== AUTH & NAVIGATION ====================
-    function handleLogin(e) {
-      if (e) e.preventDefault();
+    // ==================== NAVIGASI, ACCORDION & SIDEBAR ====================
+    function toggleAccordion(menuId) {
+      const menu = document.getElementById(menuId);
+      const arrow = document.getElementById(`arrow-${menuId}`);
+      if (menu) {
+        menu.classList.toggle("hidden");
+        if (arrow) arrow.classList.toggle("rotate-180");
+      }
+    }
+
+    function toggleSidebar() {
+      const sidebar = document.getElementById("main-sidebar");
+      const backdrop = document.getElementById("sidebar-backdrop");
+      if (!sidebar) return;
+
+      const isMobile = window.innerWidth < 768;
+      if (isMobile) {
+        sidebar.classList.toggle("hidden");
+        if (backdrop) backdrop.classList.toggle("hidden");
+      } else {
+        sidebar.classList.toggle("md:flex");
+        sidebar.classList.toggle("hidden");
+      }
+      lucide.createIcons();
+    }
+
+    function toggleFullScreen() {
+      const icon = document.getElementById("icon-fullscreen");
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+        if (icon) icon.setAttribute("data-lucide", "minimize");
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
+        if (icon) icon.setAttribute("data-lucide", "maximize");
+      }
+      lucide.createIcons();
+    }
+
+    function setPosMobileTab(tab) {
+      const catPanel = document.getElementById("pos-catalog-panel");
+      const cartPanel = document.getElementById("pos-cart-panel");
+      const btnCat = document.getElementById("pos-tab-catalog-btn");
+      const btnCart = document.getElementById("pos-tab-cart-btn");
+
+      if (tab === "catalog") {
+        if (catPanel) catPanel.classList.remove("hidden");
+        if (cartPanel) {
+          cartPanel.classList.add("hidden");
+          cartPanel.classList.remove("flex");
+        }
+        if (btnCat) btnCat.className = "flex-1 py-1.5 rounded-lg bg-amber-500 text-slate-950 font-extrabold text-xs flex items-center justify-center gap-1.5 transition shadow-xs";
+        if (btnCart) btnCart.className = "flex-1 py-1.5 rounded-lg bg-transparent text-slate-600 font-bold text-xs flex items-center justify-center gap-1.5 transition";
+      } else {
+        if (catPanel) catPanel.classList.add("hidden");
+        if (cartPanel) {
+          cartPanel.classList.remove("hidden");
+          cartPanel.classList.add("flex");
+        }
+        if (btnCart) btnCart.className = "flex-1 py-1.5 rounded-lg bg-amber-500 text-slate-950 font-extrabold text-xs flex items-center justify-center gap-1.5 transition shadow-xs";
+        if (btnCat) btnCat.className = "flex-1 py-1.5 rounded-lg bg-transparent text-slate-600 font-bold text-xs flex items-center justify-center gap-1.5 transition";
+      }
+      lucide.createIcons();
+    }
+
+    function openView(viewId, title) {
+      document.querySelectorAll("[id^='view-']").forEach(v => v.classList.add("hidden"));
+      const target = document.getElementById(`view-${viewId}`);
+      if (target) target.classList.remove("hidden");
+
+      const titleEl = document.getElementById("page-title");
+      if (titleEl) titleEl.innerText = title;
+
+      document.querySelectorAll(".sidebar-item, .sidebar-sub").forEach(el => {
+        el.classList.remove("bg-amber-500", "text-slate-950", "font-bold");
+      });
+      const activeNav = document.getElementById(`nav-${viewId}`);
+      if (activeNav) activeNav.classList.add("bg-amber-500", "text-slate-950", "font-bold");
+
+      if (viewId === "pos") {
+        if (window.innerWidth < 1024) {
+          const sidebar = document.getElementById("main-sidebar");
+          const backdrop = document.getElementById("sidebar-backdrop");
+          if (sidebar) {
+            sidebar.classList.add("hidden");
+            sidebar.classList.remove("md:flex");
+          }
+          if (backdrop) backdrop.classList.add("hidden");
+        }
+        setPosMobileTab('catalog');
+      } else if (window.innerWidth < 768) {
+        const sidebar = document.getElementById("main-sidebar");
+        const backdrop = document.getElementById("sidebar-backdrop");
+        if (sidebar) sidebar.classList.add("hidden");
+        if (backdrop) backdrop.classList.add("hidden");
+      }
+
+      lucide.createIcons();
+    }
+
+    function handleLogin(event) {
+      if (event) event.preventDefault();
       const uInput = (document.getElementById("login-username")?.value || "").trim().toLowerCase();
       const pInput = (document.getElementById("login-password")?.value || "").trim();
 
-      if (!uInput || !pInput) {
-        showToast("Mohon masukkan username dan password!", "error");
-        return;
-      }
-
-      // Master akun default cadangan permanen
       const defaultUsers = {
         owner: { id: 1, name: "Owner Toko", username: "owner", password: "123", role: "Owner / Super Admin", status: "Aktif" },
         kasir: { id: 2, name: "Kasir Utama", username: "kasir", password: "123", role: "Kasir / POS", status: "Aktif" },
-        admin: { id: 3, name: "Admin Resto", username: "admin", password: "123", role: "Admin Gudang & Menu", status: "Aktif" }
+        admin: { id: 3, name: "Admin Gudang", username: "admin", password: "123", role: "Admin Gudang & Menu", status: "Aktif" }
       };
 
-      // Cari di state users lokal/drive
       let user = users.find(u => u && u.username && u.username.toLowerCase() === uInput);
-
-      // Jika user ditemukan di database, cocokkan password (fallback ke '123' jika kosong/undefined dari sync)
       if (user) {
         const fallbackPwd = defaultUsers[uInput] ? defaultUsers[uInput].password : "123";
         const expectedPwd = String(user.password || fallbackPwd).trim();
         if (expectedPwd !== pInput) {
-          showToast("Password salah!", "error");
-          return;
+          return showToast("Password salah!", "error");
         }
       } else if (defaultUsers[uInput]) {
-        // Fallback akun default utama jika terhapus/belum ada di sync
         const def = defaultUsers[uInput];
         if (def.password === pInput) {
           user = def;
           users.push(def);
           saveLocalState();
         } else {
-          showToast("Password salah!", "error");
-          return;
+          return showToast("Password salah!", "error");
         }
       } else {
-        showToast("Username atau password tidak ditemukan!", "error");
-        return;
+        return showToast("Username atau password tidak ditemukan!", "error");
       }
 
       currentUser = user;
@@ -1157,118 +1212,10 @@
       lucide.createIcons();
     }
 
-    function toggleAccordion(menuId) {
-      const menu = document.getElementById(menuId);
-      const arrow = document.getElementById(`arrow-${menuId}`);
-      if (menu) {
-        menu.classList.toggle("hidden");
-        if (arrow) arrow.classList.toggle("rotate-180");
-      }
-    }
-
-    // Toggle Sidebar Navigasi (Desktop & Mobile)
-    function toggleSidebar() {
-      const sidebar = document.getElementById("main-sidebar");
-      const backdrop = document.getElementById("sidebar-backdrop");
-      if (!sidebar) return;
-
-      const isMobile = window.innerWidth < 768;
-
-      if (isMobile) {
-        sidebar.classList.toggle("hidden");
-        if (backdrop) backdrop.classList.toggle("hidden");
-      } else {
-        sidebar.classList.toggle("md:flex");
-        sidebar.classList.toggle("hidden");
-      }
-      lucide.createIcons();
-    }
-
-    // Layar Penuh (Fullscreen Mode Kiosk)
-    function toggleFullScreen() {
-      const icon = document.getElementById("icon-fullscreen");
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch((err) => {
-          showToast("Izin Fullscreen tidak didukung/dibatasi browser", "info");
-        });
-        if (icon) icon.setAttribute("data-lucide", "minimize");
-      } else {
-        if (document.exitFullscreen) {
-          document.exitFullscreen();
-        }
-        if (icon) icon.setAttribute("data-lucide", "maximize");
-      }
-      lucide.createIcons();
-    }
-
-    // Switch Tab Mobile pada Layar Kasir POS
-    function setPosMobileTab(tab) {
-      const catPanel = document.getElementById("pos-catalog-panel");
-      const cartPanel = document.getElementById("pos-cart-panel");
-      const btnCat = document.getElementById("pos-tab-catalog-btn");
-      const btnCart = document.getElementById("pos-tab-cart-btn");
-
-      if (tab === "catalog") {
-        if (catPanel) catPanel.classList.remove("hidden");
-        if (cartPanel) {
-          cartPanel.classList.add("hidden");
-          cartPanel.classList.remove("flex");
-        }
-        if (btnCat) btnCat.className = "flex-1 py-1.5 rounded-lg bg-amber-500 text-slate-950 font-extrabold text-xs flex items-center justify-center gap-1.5 transition shadow-xs";
-        if (btnCart) btnCart.className = "flex-1 py-1.5 rounded-lg bg-transparent text-slate-600 font-bold text-xs flex items-center justify-center gap-1.5 transition";
-      } else {
-        if (catPanel) catPanel.classList.add("hidden");
-        if (cartPanel) {
-          cartPanel.classList.remove("hidden");
-          cartPanel.classList.add("flex");
-        }
-        if (btnCart) btnCart.className = "flex-1 py-1.5 rounded-lg bg-amber-500 text-slate-950 font-extrabold text-xs flex items-center justify-center gap-1.5 transition shadow-xs";
-        if (btnCat) btnCat.className = "flex-1 py-1.5 rounded-lg bg-transparent text-slate-600 font-bold text-xs flex items-center justify-center gap-1.5 transition";
-      }
-      lucide.createIcons();
-    }
-
-    function openView(viewId, title) {
-      document.querySelectorAll("[id^='view-']").forEach(v => v.classList.add("hidden"));
-      const target = document.getElementById(`view-${viewId}`);
-      if (target) target.classList.remove("hidden");
-
-      const titleEl = document.getElementById("page-title");
-      if (titleEl) titleEl.innerText = title;
-
-      document.querySelectorAll(".sidebar-item, .sidebar-sub").forEach(el => {
-        el.classList.remove("bg-amber-500", "text-slate-950", "font-bold");
-      });
-      const activeNav = document.getElementById(`nav-${viewId}`);
-      if (activeNav) activeNav.classList.add("bg-amber-500", "text-slate-950", "font-bold");
-
-      // Otomatis sembunyikan sidebar pada HP / Tablet saat membuka POS agar layar penuh & lega
-      if (viewId === "pos") {
-        if (window.innerWidth < 1024) {
-          const sidebar = document.getElementById("main-sidebar");
-          const backdrop = document.getElementById("sidebar-backdrop");
-          if (sidebar) {
-            sidebar.classList.add("hidden");
-            sidebar.classList.remove("md:flex");
-          }
-          if (backdrop) backdrop.classList.add("hidden");
-        }
-        // Default ke tab katalog pada mobile
-        setPosMobileTab('catalog');
-      } else if (window.innerWidth < 768) {
-        const sidebar = document.getElementById("main-sidebar");
-        const backdrop = document.getElementById("sidebar-backdrop");
-        if (sidebar) sidebar.classList.add("hidden");
-        if (backdrop) backdrop.classList.add("hidden");
-      }
-
-      lucide.createIcons();
-    }
-
     function applyUserPermissions() {
       if (!currentUser) return;
       const userRole = currentUser.role;
-      const allowed = rolePermissions[userRole] || ["dashboard", "pos", "riwayat-penjualan"];
+      const allowed = rolePermissions[userRole] || ["dashboard", "pos", "riwayat-penjualan", "printer"];
 
       const moduleElements = {
         dashboard: document.getElementById("nav-dashboard"),
@@ -1281,13 +1228,58 @@
         pengaturan: document.getElementById("module-pengaturan")
       };
 
+      const subElements = {
+        "pos": document.getElementById("nav-pos"),
+        "riwayat-penjualan": document.getElementById("nav-riwayat-penjualan"),
+        "pembelian-bahan": document.getElementById("nav-pembelian-bahan"),
+        "supplier": document.getElementById("nav-supplier"),
+        "riwayat-pembelian": document.getElementById("nav-riwayat-pembelian"),
+        "daftar-produk": document.getElementById("nav-daftar-produk"),
+        "kategori-produk": document.getElementById("nav-kategori-produk"),
+        "resep-komposisi": document.getElementById("nav-resep-komposisi"),
+        "stok-bahan": document.getElementById("nav-stok-bahan"),
+        "stock-opname": document.getElementById("nav-stock-opname"),
+        "profil-usaha": document.getElementById("nav-profil-usaha"),
+        "pajak": document.getElementById("nav-pajak"),
+        "diskon-promo": document.getElementById("nav-diskon-promo"),
+        "metode-bayar-cfg": document.getElementById("nav-metode-bayar-cfg"),
+        "printer": document.getElementById("nav-printer"),
+        "sinkronisasi": document.getElementById("nav-sinkronisasi"),
+        "user": document.getElementById("nav-user"),
+        "role": document.getElementById("nav-role"),
+        "hak-akses": document.getElementById("nav-hak-akses")
+      };
+
       if (userRole === "Owner / Super Admin") {
         Object.values(moduleElements).forEach(el => { if (el) el.classList.remove("hidden"); });
+        Object.values(subElements).forEach(el => { if (el) el.classList.remove("hidden"); });
       } else {
+        // Kontrol tampilan sub-menu individual
+        Object.keys(subElements).forEach(key => {
+          const el = subElements[key];
+          if (el) {
+            if (allowed.includes(key)) el.classList.remove("hidden");
+            else el.classList.add("hidden");
+          }
+        });
+
+        // Kontrol tampilan grup menu utama
+        const moduleMapping = {
+          dashboard: ["dashboard"],
+          penjualan: ["pos", "riwayat-penjualan"],
+          pembelian: ["pembelian-bahan", "supplier", "riwayat-pembelian"],
+          produk: ["daftar-produk", "kategori-produk", "resep-komposisi"],
+          persediaan: ["stok-bahan", "stock-opname"],
+          keuangan: ["keuangan"],
+          pengguna: ["user", "role", "hak-akses"],
+          pengaturan: ["profil-usaha", "pajak", "diskon-promo", "metode-bayar-cfg", "printer", "sinkronisasi"]
+        };
+
         Object.keys(moduleElements).forEach(mod => {
           const el = moduleElements[mod];
           if (el) {
-            const hasAccess = allowed.some(a => a === mod || (mod === "penjualan" && (a === "pos" || a === "riwayat-penjualan")));
+            const targets = moduleMapping[mod] || [mod];
+            const hasAccess = targets.some(t => allowed.includes(t));
             if (hasAccess) el.classList.remove("hidden");
             else el.classList.add("hidden");
           }
@@ -1295,7 +1287,226 @@
       }
     }
 
-    // ==================== RENDERING & VIEWS ====================
+    const THERMAL_PRINTER_SERVICES = [
+      "000018f0-0000-1000-8000-00805f9b34fb",
+      "49535343-fe7d-4ae5-8fa9-9fafd205e455",
+      "e7810a71-73ae-499d-8c15-faa9aef0c3f2",
+      "0000ff00-0000-1000-8000-00805f9b34fb",
+      "0000e781-0000-1000-8000-00805f9b34fb"
+    ];
+
+    async function connectRPP02N() {
+      if (!navigator.bluetooth) {
+        showToast("Web Bluetooth tidak didukung browser ini. Gunakan dialog cetak 58mm.", "info");
+        updatePrinterStatus(false);
+        return;
+      }
+
+      try {
+        showToast("Membuka pemindai Bluetooth untuk RPP02N...", "info");
+        try {
+          btDevice = await navigator.bluetooth.requestDevice({
+            filters: [
+              { namePrefix: "RPP" },
+              { namePrefix: "POS" },
+              { namePrefix: "MTP" },
+              { namePrefix: "Printer" },
+              { namePrefix: "Bluetooth" }
+            ],
+            optionalServices: THERMAL_PRINTER_SERVICES
+          });
+        } catch (tier1Err) {
+          if (tier1Err.name === "NotFoundError" || (tier1Err.message && tier1Err.message.includes("cancelled"))) {
+            throw tier1Err;
+          }
+          showToast("Memindai seluruh perangkat Bluetooth di sekitar...", "info");
+          btDevice = await navigator.bluetooth.requestDevice({
+            acceptAllDevices: true,
+            optionalServices: THERMAL_PRINTER_SERVICES
+          });
+        }
+
+        if (!btDevice) return;
+
+        btDevice.addEventListener("gattserverdisconnected", onRPP02NDisconnected);
+        showToast(`Menghubungkan ke ${btDevice.name || 'RPP02N'}...`, "info");
+        btServer = await btDevice.gatt.connect();
+
+        let foundChar = null;
+        const primaryServices = await btServer.getPrimaryServices().catch(() => []);
+        for (const service of primaryServices) {
+          const characteristics = await service.getCharacteristics().catch(() => []);
+          for (const char of characteristics) {
+            if (char.properties.write || char.properties.writeWithoutResponse) {
+              foundChar = char;
+              break;
+            }
+          }
+          if (foundChar) break;
+        }
+
+        if (!foundChar) throw new Error("Karakteristik data ESC/POS tidak ditemukan.");
+
+        btCharacteristic = foundChar;
+        updatePrinterStatus(true, btDevice.name || "RPP02N");
+        showToast(`Berhasil terhubung ke ${btDevice.name || 'RPP02N'}!`, "success");
+
+      } catch (err) {
+        console.warn("Bluetooth Connection notice:", err);
+        if (err.name === "NotFoundError" || (err.message && err.message.toLowerCase().includes("cancelled"))) {
+          showToast("Pemindaian Bluetooth dibatalkan. Struk tetap dapat dicetak via Dialog Cetak 58mm.", "info");
+        } else if (err.name === "SecurityError" || err.name === "NotAllowedError") {
+          showToast("Izin Bluetooth belum aktif. Pastikan Bluetooth & Lokasi (GPS) aktif di perangkat.", "info");
+        } else {
+          showToast("Koneksi Bluetooth dialihkan ke Dialog Cetak Sistem 58mm.", "info");
+        }
+        updatePrinterStatus(false);
+      }
+    }
+
+    function onRPP02NDisconnected() {
+      updatePrinterStatus(false);
+      showToast("Koneksi Bluetooth RPP02N terputus. Menggunakan Dialog Cetak Sistem.", "info");
+    }
+
+    function disconnectRPP02N() {
+      if (btDevice && btDevice.gatt && btDevice.gatt.connected) {
+        btDevice.gatt.disconnect();
+      }
+      onRPP02NDisconnected();
+    }
+
+    function updatePrinterStatus(connected, name = "RPP02N") {
+      const stBadge = document.getElementById("printer-bt-status");
+      const btnC = document.getElementById("btn-connect-printer");
+      const btnD = document.getElementById("btn-disconnect-printer");
+
+      if (connected) {
+        if (stBadge) {
+          stBadge.innerText = `Terhubung: ${name} 🟢`;
+          stBadge.className = "px-2 py-0.5 rounded-full font-bold text-[10px] bg-emerald-100 text-emerald-700";
+        }
+        if (btnC) btnC.classList.add("hidden");
+        if (btnD) btnD.classList.remove("hidden");
+      } else {
+        if (stBadge) {
+          stBadge.innerText = "Mode: Dialog Sistem 58mm ⚪";
+          stBadge.className = "px-2 py-0.5 rounded-full font-bold text-[10px] bg-slate-200 text-slate-700";
+        }
+        if (btnC) btnC.classList.remove("hidden");
+        if (btnD) btnD.classList.add("hidden");
+        btCharacteristic = null;
+      }
+    }
+
+    async function sendRawEscPos(buffer) {
+      if (!btCharacteristic) throw new Error("Printer Bluetooth tidak terhubung.");
+      const chunkSize = 100;
+      for (let i = 0; i < buffer.length; i += chunkSize) {
+        const chunk = buffer.slice(i, i + chunkSize);
+        if (btCharacteristic.writeValueWithoutResponse) {
+          await btCharacteristic.writeValueWithoutResponse(chunk);
+        } else {
+          await btCharacteristic.writeValue(chunk);
+        }
+        await new Promise(r => setTimeout(r, 25));
+      }
+    }
+
+    function buildReceiptEscPos(order) {
+      const storeName = document.getElementById("cfg-name")?.value || "WAFFELIN MOZZARELA WAFFLE";
+      const storeAddr = document.getElementById("cfg-address")?.value || "Jl. Kuliner No. 88, Jakarta Selatan";
+
+      const enc = new TextEncoder();
+      let bytes = [
+        0x1B, 0x40, // Init printer
+        0x1B, 0x61, 0x01, // Center
+        ...enc.encode(storeName + "\n"),
+        ...enc.encode(storeAddr + "\n"),
+        ...enc.encode("--------------------------------\n"),
+        0x1B, 0x61, 0x00, // Left
+        ...enc.encode(`No : ${order.id}\n`),
+        ...enc.encode(`Tgl: ${order.time}\n`),
+        ...enc.encode(`Plg: ${order.consumer}\n`),
+        ...enc.encode(`Byr: ${order.pay}\n`),
+        ...enc.encode("--------------------------------\n")
+      ];
+
+      order.cartItems.forEach(it => {
+        const lineItem = `${it.name}\n`;
+        const leftCol = `${it.qty} x ${it.price.toLocaleString("id-ID")}`.padEnd(18);
+        const rightCol = `Rp ${(it.price * it.qty).toLocaleString("id-ID")}\n`;
+        bytes.push(...enc.encode(lineItem));
+        bytes.push(...enc.encode(leftCol + rightCol));
+      });
+
+      bytes.push(
+        ...enc.encode("--------------------------------\n"),
+        ...enc.encode(`Subtotal   : Rp ${order.subtotal.toLocaleString("id-ID")}\n`),
+        ...enc.encode(`Pajak      : Rp ${order.tax.toLocaleString("id-ID")}\n`),
+        ...enc.encode(`Diskon     : Rp ${order.disc.toLocaleString("id-ID")}\n`),
+        ...enc.encode(`TOTAL      : Rp ${order.total.toLocaleString("id-ID")}\n`),
+        ...enc.encode(`Bayar      : Rp ${order.cash.toLocaleString("id-ID")}\n`),
+        ...enc.encode(`Kembali    : Rp ${order.chg.toLocaleString("id-ID")}\n`),
+        0x1B, 0x61, 0x01,
+        ...enc.encode("--------------------------------\n"),
+        ...enc.encode("Terima Kasih Atas Kunjungan Anda\n\n\n\n"),
+        0x1D, 0x56, 0x00
+      );
+
+      return new Uint8Array(bytes);
+    }
+
+    async function printReceiptDirect() {
+      if (!lastOrder) {
+        return showToast("Tidak ada struk transaksi untuk dicetak.", "error");
+      }
+
+      if (btCharacteristic && btDevice && btDevice.gatt && btDevice.gatt.connected) {
+        try {
+          showToast("Mencetak struk ke RPP02N via Bluetooth...", "info");
+          const buffer = buildReceiptEscPos(lastOrder);
+          await sendRawEscPos(buffer);
+          showToast("Struk berhasil dicetak ke RPP02N!", "success");
+          return;
+        } catch (err) {
+          console.warn("Gagal kirim via Bluetooth:", err);
+          showToast("Bluetooth terputus, mengalihkan ke Dialog Cetak 58mm...", "info");
+        }
+      }
+
+      showToast("Membuka Dialog Cetak Sistem 58mm...", "info");
+      setTimeout(() => { window.print(); }, 100);
+    }
+
+    async function testPrintBluetooth() {
+      if (!btCharacteristic) {
+        showToast("Bluetooth belum terhubung. Menguji Dialog Cetak Sistem 58mm...", "info");
+        testPrintSystemDialog();
+        return;
+      }
+      try {
+        const enc = new TextEncoder();
+        const testBytes = new Uint8Array([
+          0x1B, 0x40,
+          0x1B, 0x61, 0x01,
+          ...enc.encode("=== TES PRINTER RPP02N ===\n"),
+          ...enc.encode("KULINER POS TERKONEKSI\n"),
+          ...enc.encode("Format: 58mm Thermal ESC/POS\n"),
+          ...enc.encode("--------------------------------\n\n\n\n")
+        ]);
+        await sendRawEscPos(testBytes);
+        showToast("Perintah tes cetak Bluetooth berhasil!", "success");
+      } catch (e) {
+        showToast("Gagal tes Bluetooth. Membuka dialog sistem...", "info");
+        testPrintSystemDialog();
+      }
+    }
+
+    function testPrintSystemDialog() {
+      window.print();
+    }
+
     function renderCategoryPills() {
       const box = document.getElementById("pos-cat-filter-pills");
       if (!box) return;
@@ -1335,7 +1546,7 @@
         card.onclick = () => addToCart(p);
         card.innerHTML = `
           <div>
-            <div class="h-12 bg-slate-50 rounded-lg flex items-center justify-center text-2xl mb-2">${p.icon}</div>
+            <div class="h-12 bg-slate-50 rounded-lg flex items-center justify-center text-2xl mb-2">${p.icon || '🍽️'}</div>
             <span class="text-[9px] text-amber-600 font-bold uppercase tracking-wider">${p.category}</span>
             <h4 class="font-bold text-slate-800 line-clamp-2 leading-tight">${p.name}</h4>
           </div>
@@ -1502,6 +1713,81 @@
       }
     }
 
+    function finishTransaction() {
+      if (cart.length === 0) return showToast("Pilih menu terlebih dahulu!", "error");
+      const { subtotal, tax, disc, total } = calculateCart();
+      const cash = parseFloat(document.getElementById("cash-received")?.value || 0);
+
+      if (paymentMethod === "Tunai" && cash < total) {
+        return showToast("Uang tunai yang diterima masih kurang!", "error");
+      }
+
+      let consumerLabel = "";
+      if (consumerType === "Offline") {
+        const sub = document.getElementById("offline-sub-type")?.value || "Take-Away";
+        const ident = (document.getElementById("offline-identifier")?.value || "Konsumen 01").trim();
+        consumerLabel = `Offline: ${sub} (${ident})`;
+      } else {
+        const plat = document.getElementById("online-platform")?.value || "GoFood";
+        const ident = (document.getElementById("online-identifier")?.value || "Order").trim();
+        consumerLabel = `Online: ${plat} (${ident})`;
+      }
+
+      const orderId = `#ORD-${Math.floor(1000 + Math.random() * 9000)}`;
+      const itemsStr = cart.map(i => `${i.qty}x ${i.name}`).join(", ");
+      const timeNow = new Date().toLocaleDateString('id-ID') + ' ' + new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+      // Potong Stok via BOM Resep
+      let orderHPP = 0;
+      cart.forEach(cartItem => {
+        orderHPP += ((cartItem.hpp || 0) * cartItem.qty);
+        const r = recipes.find(rec => rec.productCode === cartItem.code);
+        if (r && Array.isArray(r.items)) {
+          r.items.forEach(bom => {
+            const mat = inventory.find(m => m.name.toLowerCase() === bom.matName.toLowerCase() || m.id === bom.matId);
+            if (mat) {
+              const used = +(bom.qty * cartItem.qty).toFixed(2);
+              mat.stock = Math.max(0, +(mat.stock - used).toFixed(2));
+              mat.status = mat.stock <= mat.min ? "Kritis" : "Aman";
+            }
+          });
+        }
+      });
+
+      const newTrx = {
+        id: orderId,
+        time: timeNow,
+        consumer: consumerLabel,
+        items: itemsStr,
+        pay: paymentMethod,
+        subtotal,
+        tax,
+        disc,
+        total,
+        hpp: orderHPP || Math.round(total * 0.45)
+      };
+
+      transactions.unshift(newTrx);
+      lastOrder = {
+        ...newTrx,
+        cartItems: [...cart],
+        cash: paymentMethod === "Tunai" ? cash : total,
+        chg: paymentMethod === "Tunai" ? Math.max(0, cash - total) : 0
+      };
+
+      saveLocalState();
+      sendDataToDrive("save_transaksi", newTrx);
+      sendDataToDrive("sync_stok_bahan", { inventoryList: inventory });
+
+      clearCart();
+      renderHistory();
+      renderInventory();
+      updateDashboard();
+      closePaymentModal();
+      showReceiptModal();
+      showToast("Transaksi berhasil disimpan!", "success");
+    }
+
     function showReceiptModal() {
       if (!lastOrder) return;
       const o = lastOrder;
@@ -1525,308 +1811,818 @@
       }
 
       document.getElementById("rcpt-modal").classList.remove("hidden");
-
-      // Auto print ke printer RPP02N jika opsi aktif
-      if (printerConfig.autoPrint) {
-        setTimeout(() => {
-          printReceiptDirect();
-        }, 300);
-      }
     }
 
-    // ==================== BLUETOOTH THERMAL PRINTER RPP02N (ESC/POS) ====================
-    // Daftar UUID GATT Service & Karakteristik Umum Printer Thermal Bluetooth
-    const PRINTER_SERVICES = [
-      '000018f0-0000-1000-8000-00805f9b34fb',
-      '0000ff00-0000-1000-8000-00805f9b34fb',
-      '49535343-fe7d-4ae5-8fa9-9fafd205e455',
-      'e7810a71-73ae-499d-8c15-faa9aef0c3f2',
-      '0000e781-0000-1000-8000-00805f9b34fb'
-    ];
+    function showAppModal(title, fieldsHtml, context, submitLabel = "Simpan Data") {
+      currentFormContext = context;
+      const titleEl = document.getElementById("form-modal-title");
+      const fieldsEl = document.getElementById("form-modal-fields");
+      const submitBtn = document.getElementById("form-modal-submit-btn");
 
-    async function connectBluetoothPrinter() {
-      if (!navigator.bluetooth) {
-        showToast("Web Bluetooth API tidak didukung di browser ini. Gunakan Chrome di HP Android / PC!", "error");
-        return;
-      }
+      if (titleEl) titleEl.innerText = title;
+      if (fieldsEl) fieldsEl.innerHTML = fieldsHtml;
+      if (submitBtn) submitBtn.innerText = submitLabel;
 
-      try {
-        showToast("Mencari printer Bluetooth RPP02N...", "info");
-        
-        // Minta akses perangkat Bluetooth thermal
-        bluetoothDevice = await navigator.bluetooth.requestDevice({
-          filters: [
-            { namePrefix: 'RPP' },
-            { namePrefix: 'Bluetooth' },
-            { namePrefix: 'Printer' },
-            { namePrefix: 'MTP' },
-            { namePrefix: 'POS' }
-          ],
-          optionalServices: PRINTER_SERVICES,
-          acceptAllDevices: false
-        }).catch(async () => {
-          // Fallback cari semua perangkat jika filter prefix tidak cocok
-          return await navigator.bluetooth.requestDevice({
-            acceptAllDevices: true,
-            optionalServices: PRINTER_SERVICES
-          });
-        });
-
-        if (!bluetoothDevice) return;
-
-        showToast(`Menghubungkan ke ${bluetoothDevice.name || 'RPP02N'}...`, "info");
-        bluetoothDevice.addEventListener('gattserverdisconnected', onBluetoothDisconnected);
-
-        const server = await bluetoothDevice.gatt.connect();
-        let characteristicFound = null;
-
-        // Cari service dan characteristic yang dapat menulis data (write / writeWithoutResponse)
-        const services = await server.getPrimaryServices();
-        for (const service of services) {
-          try {
-            const characteristics = await service.getCharacteristics();
-            for (const char of characteristics) {
-              if (char.properties.write || char.properties.writeWithoutResponse) {
-                characteristicFound = char;
-                break;
-              }
-            }
-          } catch (e) {
-            console.warn("Gagal mengecek karakteristik service:", e);
-          }
-          if (characteristicFound) break;
-        }
-
-        if (!characteristicFound) {
-          throw new Error("Karakteristik write ESC/POS tidak ditemukan pada perangkat ini");
-        }
-
-        bluetoothCharacteristic = characteristicFound;
-        updatePrinterUIStatus(true, bluetoothDevice.name || 'RPP02N');
-        showToast(`Berhasil terhubung ke ${bluetoothDevice.name || 'RPP02N'}!`, "success");
-
-      } catch (err) {
-        console.error("Gagal koneksi Bluetooth:", err);
-        showToast(`Koneksi Bluetooth gagal: ${err.message || err}`, "error");
-        updatePrinterUIStatus(false);
-      }
-    }
-
-    function onBluetoothDisconnected() {
-      bluetoothCharacteristic = null;
-      updatePrinterUIStatus(false);
-      showToast("Koneksi printer Bluetooth RPP02N terputus", "info");
-    }
-
-    function disconnectBluetoothPrinter() {
-      if (bluetoothDevice && bluetoothDevice.gatt.connected) {
-        bluetoothDevice.gatt.disconnect();
-      }
-      bluetoothCharacteristic = null;
-      updatePrinterUIStatus(false);
-      showToast("Printer Bluetooth telah diputuskan", "info");
-    }
-
-    function updatePrinterUIStatus(isConnected, deviceName = "") {
-      const dot = document.getElementById("printer-status-dot");
-      const text = document.getElementById("printer-status-text");
-      const devNameEl = document.getElementById("printer-device-name");
-      const btnConnect = document.getElementById("btn-connect-bt");
-      const btnDisconnect = document.getElementById("btn-disconnect-bt");
-
-      if (dot) dot.className = `w-2.5 h-2.5 rounded-full ${isConnected ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'}`;
-      if (text) text.innerText = isConnected ? `Terhubung ke ${deviceName}` : "Belum Terhubung ke RPP02N";
-      if (devNameEl) devNameEl.innerText = isConnected ? `Perangkat Aktif: ${deviceName}` : "Perangkat: Tidak ada";
-
-      if (btnConnect) btnConnect.classList.toggle("hidden", isConnected);
-      if (btnDisconnect) btnDisconnect.classList.toggle("hidden", !isConnected);
+      const modal = document.getElementById("app-form-modal");
+      if (modal) modal.classList.remove("hidden");
       lucide.createIcons();
     }
 
-    // Generator Perintah Cetak ESC/POS untuk RPP02N (58mm - 32 Karakter per Baris)
-    function buildEscPosReceipt(order) {
-      const ESC = '\x1b';
-      const GS = '\x1d';
-      const lineWidth = parseInt(printerConfig.paperWidth || '58') === 80 ? 48 : 32;
-
-      let commands = '';
-
-      // Reset / Inisialisasi printer
-      commands += ESC + '@';
-
-      // Header Toko (Center, Bold, Double Size)
-      commands += ESC + 'a' + '\x01'; // Center
-      commands += GS + '!' + '\x11';  // Double height & width
-      commands += (document.getElementById("cfg-name")?.value || "WAFFELIN MOZZARELA WAFFLE") + '\n';
-      commands += GS + '!' + '\x00';  // Normal size
-      commands += ESC + 'E' + '\x01'; // Bold ON
-      commands += (document.getElementById("cfg-address")?.value || "Jl. Kuliner No. 88, Jakarta Selatan") + '\n';
-      commands += (document.getElementById("cfg-phone")?.value || "0812-8899-0011") + '\n';
-      commands += ESC + 'E' + '\x00'; // Bold OFF
-      commands += '-'.repeat(lineWidth) + '\n';
-
-      // Metadata Transaksi (Left Align)
-      commands += ESC + 'a' + '\x00'; // Left
-      commands += `No Bon   : ${order.id}\n`;
-      commands += `Waktu    : ${order.time}\n`;
-      commands += `Konsumen : ${order.consumer}\n`;
-      commands += `Kasir    : ${currentUser ? currentUser.name : 'Kasir Utama'}\n`;
-      commands += `Bayar    : ${order.pay}\n`;
-      commands += '-'.repeat(lineWidth) + '\n';
-
-      // Item Pesanan
-      if (order.cartItems && order.cartItems.length > 0) {
-        order.cartItems.forEach(item => {
-          const name = item.name.length > (lineWidth - 10) ? item.name.substring(0, lineWidth - 10) : item.name;
-          const totalStr = `Rp ${(item.price * item.qty).toLocaleString('id-ID')}`;
-          const spaces = Math.max(1, lineWidth - name.length - totalStr.length);
-          commands += name + ' '.repeat(spaces) + totalStr + '\n';
-          commands += `  ${item.qty} x Rp ${item.price.toLocaleString('id-ID')}\n`;
-        });
-      } else {
-        commands += `${order.items}\n`;
-      }
-      commands += '-'.repeat(lineWidth) + '\n';
-
-      // Ringkasan Subtotal, Pajak, Diskon, Total
-      const formatLine = (label, valStr) => {
-        const spaces = Math.max(1, lineWidth - label.length - valStr.length);
-        return label + ' '.repeat(spaces) + valStr + '\n';
-      };
-
-      commands += formatLine("Subtotal", `Rp ${order.subtotal.toLocaleString('id-ID')}`);
-      if (order.tax > 0) commands += formatLine("Pajak PB1 (10%)", `Rp ${order.tax.toLocaleString('id-ID')}`);
-      if (order.disc > 0) commands += formatLine("Diskon", `-Rp ${order.disc.toLocaleString('id-ID')}`);
-      
-      commands += ESC + 'E' + '\x01'; // Bold ON
-      commands += formatLine("TOTAL", `Rp ${order.total.toLocaleString('id-ID')}`);
-      commands += ESC + 'E' + '\x00'; // Bold OFF
-
-      if (order.pay === "Tunai") {
-        commands += formatLine("Bayar Tunai", `Rp ${(order.cash || order.total).toLocaleString('id-ID')}`);
-        commands += formatLine("Kembalian", `Rp ${(order.chg || 0).toLocaleString('id-ID')}`);
-      }
-
-      commands += '-'.repeat(lineWidth) + '\n';
-
-      // Footer Pesan (Center)
-      commands += ESC + 'a' + '\x01'; // Center
-      commands += (printerConfig.footerText || "Terima kasih atas kunjungan Anda!") + '\n';
-      commands += "=== STRUK RESMI KASIR ===\n";
-
-      // Feed paper & cut
-      commands += '\n\n\n\n';
-      commands += GS + 'V' + '\x01'; // Cut paper (jika model printer mendukung auto-cutter)
-
-      return new TextEncoder().encode(commands);
+    function closeAppModal() {
+      const modal = document.getElementById("app-form-modal");
+      if (modal) modal.classList.add("hidden");
+      currentFormContext = null;
     }
 
-    // Kirim Byte ESC/POS ke Printer Bluetooth RPP02N dalam Chunks
-    async function sendEscPosToBluetooth(uint8Array) {
-      if (!bluetoothCharacteristic) {
-        throw new Error("Printer Bluetooth belum terhubung");
-      }
+    function showConfirmModal(message, onConfirm) {
+      const modal = document.getElementById("app-confirm-modal");
+      const msgEl = document.getElementById("confirm-modal-msg");
+      const actBtn = document.getElementById("confirm-modal-action-btn");
 
-      const CHUNK_SIZE = 100; // Ukuran chunk aman untuk BLE transfer
-      for (let i = 0; i < uint8Array.length; i += CHUNK_SIZE) {
-        const chunk = uint8Array.slice(i, i + CHUNK_SIZE);
-        if (bluetoothCharacteristic.writeValueWithoutResponse) {
-          await bluetoothCharacteristic.writeValueWithoutResponse(chunk);
+      if (msgEl) msgEl.innerText = message;
+      if (actBtn) {
+        actBtn.onclick = () => {
+          if (onConfirm) onConfirm();
+          closeConfirmModal();
+        };
+      }
+      if (modal) modal.classList.remove("hidden");
+    }
+
+    function closeConfirmModal() {
+      const modal = document.getElementById("app-confirm-modal");
+      if (modal) modal.classList.add("hidden");
+    }
+
+    function handleFormSubmit(e) {
+      if (e) e.preventDefault();
+      if (!currentFormContext) return closeAppModal();
+
+      const ctx = currentFormContext;
+
+      if (ctx.type === 'product') {
+        const code = (document.getElementById("field-prod-code")?.value || "").trim();
+        const name = (document.getElementById("field-prod-name")?.value || "").trim();
+        const category = document.getElementById("field-prod-category")?.value || "Waffle";
+        const hpp = parseFloat(document.getElementById("field-prod-hpp")?.value || 0);
+        const price = parseFloat(document.getElementById("field-prod-price")?.value || 0);
+        const icon = (document.getElementById("field-prod-icon")?.value || "🧇").trim();
+
+        if (!name) return showToast("Nama produk wajib diisi!", "error");
+        const payload = { code: code || `WFL-${products.length + 1}`, name, category, hpp, price, icon };
+
+        if (ctx.idx !== null && products[ctx.idx]) {
+          products[ctx.idx] = { ...products[ctx.idx], ...payload };
         } else {
-          await bluetoothCharacteristic.writeValue(chunk);
+          products.push({ id: Date.now(), ...payload });
         }
-        await new Promise(r => setTimeout(r, 20)); // Jeda 20ms antar chunk
+
+        saveLocalState();
+        sendDataToDrive("save_produk", payload);
+        renderProductMaster();
+        renderCatalog();
+        closeAppModal();
+        showToast("Produk menu berhasil disimpan!", "success");
+      }
+      else if (ctx.type === 'supplier') {
+        const name = (document.getElementById("field-sup-name")?.value || "").trim();
+        const category = (document.getElementById("field-sup-category")?.value || "").trim();
+        const phone = (document.getElementById("field-sup-phone")?.value || "").trim();
+        const address = (document.getElementById("field-sup-address")?.value || "").trim();
+
+        if (!name) return showToast("Nama supplier wajib diisi!", "error");
+        const supPayload = { id: ctx.idx !== null ? suppliers[ctx.idx].id : Date.now(), name, category, phone, address };
+
+        if (ctx.idx !== null && suppliers[ctx.idx]) {
+          suppliers[ctx.idx] = supPayload;
+        } else {
+          suppliers.push(supPayload);
+        }
+
+        saveLocalState();
+        sendDataToDrive("save_supplier", supPayload);
+        renderSuppliers();
+        closeAppModal();
+        showToast("Data supplier berhasil disimpan!", "success");
+      }
+      else if (ctx.type === 'material') {
+        const name = (document.getElementById("field-mat-name")?.value || "").trim();
+        const unit = (document.getElementById("field-mat-unit")?.value || "Kg").trim();
+        const stock = parseFloat(document.getElementById("field-mat-stock")?.value || 0);
+        const min = parseFloat(document.getElementById("field-mat-min")?.value || 0);
+
+        if (!name) return showToast("Nama bahan baku wajib diisi!", "error");
+        const status = stock <= min ? "Kritis" : "Aman";
+        const matPayload = { id: ctx.idx !== null ? inventory[ctx.idx].id : Date.now(), name, unit, stock, min, status };
+
+        if (ctx.idx !== null && inventory[ctx.idx]) {
+          inventory[ctx.idx] = matPayload;
+        } else {
+          inventory.push(matPayload);
+        }
+
+        saveLocalState();
+        sendDataToDrive("sync_stok_bahan", { inventoryList: inventory });
+        renderInventory();
+        updateDashboard();
+        closeAppModal();
+        showToast("Bahan baku berhasil disimpan!", "success");
+      }
+      else if (ctx.type === 'purchase') {
+        const supplier = (document.getElementById("field-po-supplier")?.value || "").trim();
+        const bahan = (document.getElementById("field-po-bahan")?.value || "").trim();
+        const qty = parseFloat(document.getElementById("field-po-qty")?.value || 0);
+        const cost = parseFloat(document.getElementById("field-po-cost")?.value || 0);
+        const timeNow = new Date().toLocaleDateString('id-ID') + ' ' + new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+        if (!bahan || qty <= 0) return showToast("Bahan dan kuantitas wajib diisi dengan benar!", "error");
+
+        const poPayload = {
+          noPO: ctx.idx !== null ? purchases[ctx.idx].noPO : `PO-${Date.now().toString().slice(-4)}`,
+          time: timeNow,
+          supplier: supplier || "Mitra Mandiri",
+          bahan,
+          qty,
+          cost
+        };
+
+        if (ctx.idx !== null && purchases[ctx.idx]) {
+          purchases[ctx.idx] = poPayload;
+        } else {
+          purchases.unshift(poPayload);
+          const mat = inventory.find(m => m.name.toLowerCase() === bahan.toLowerCase());
+          if (mat) {
+            mat.stock = +(mat.stock + qty).toFixed(2);
+            mat.status = mat.stock <= mat.min ? "Kritis" : "Aman";
+          }
+        }
+
+        saveLocalState();
+        sendDataToDrive("save_pembelian_po", poPayload);
+        sendDataToDrive("sync_stok_bahan", { inventoryList: inventory });
+        renderPurchases();
+        renderInventory();
+        updateDashboard();
+        closeAppModal();
+        showToast("Catatan PO pengadaan berhasil disimpan!", "success");
+      }
+      else if (ctx.type === 'opname') {
+        const bahanName = document.getElementById("field-opn-bahan")?.value;
+        const physicalStock = parseFloat(document.getElementById("field-opn-physical")?.value || 0);
+        const note = (document.getElementById("field-opn-note")?.value || "Pengecekan Rutin").trim();
+        const mat = inventory.find(m => m.name === bahanName);
+
+        if (!mat) return showToast("Bahan tidak valid!", "error");
+
+        const diff = +(physicalStock - mat.stock).toFixed(2);
+        const timeNow = new Date().toLocaleDateString('id-ID') + ' ' + new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+        const opnPayload = {
+          idOpname: ctx.idx !== null ? opnames[ctx.idx].idOpname : `OPN-${Date.now().toString().slice(-4)}`,
+          time: timeNow,
+          bahanName: mat.name,
+          systemStock: mat.stock,
+          physicalStock,
+          difference: diff,
+          note
+        };
+
+        if (ctx.idx !== null && opnames[ctx.idx]) {
+          opnames[ctx.idx] = opnPayload;
+        } else {
+          opnames.unshift(opnPayload);
+          mat.stock = physicalStock;
+          mat.status = mat.stock <= mat.min ? "Kritis" : "Aman";
+        }
+
+        saveLocalState();
+        sendDataToDrive("save_stock_opname", opnPayload);
+        sendDataToDrive("sync_stok_bahan", { inventoryList: inventory });
+        renderOpnames();
+        renderInventory();
+        updateDashboard();
+        closeAppModal();
+        showToast("Stock Opname berhasil disimpan & direkonsiliasi!", "success");
+      }
+      else if (ctx.type === 'expense') {
+        const category = document.getElementById("field-exp-category")?.value || "Operasional";
+        const note = (document.getElementById("field-exp-note")?.value || "").trim();
+        const amount = parseFloat(document.getElementById("field-exp-amount")?.value || 0);
+        const date = document.getElementById("field-exp-date")?.value || new Date().toISOString().split('T')[0];
+
+        if (!note || amount <= 0) return showToast("Keterangan dan nominal pengeluaran wajib diisi!", "error");
+
+        const expPayload = {
+          id: ctx.idx !== null ? expenses[ctx.idx].id : `EXP-${Date.now().toString().slice(-4)}`,
+          date,
+          category,
+          note,
+          amount
+        };
+
+        if (ctx.idx !== null && expenses[ctx.idx]) {
+          expenses[ctx.idx] = expPayload;
+        } else {
+          expenses.unshift(expPayload);
+        }
+
+        saveLocalState();
+        sendDataToDrive("save_pengeluaran", expPayload);
+        renderExpenses();
+        updateDashboard();
+        closeAppModal();
+        showToast("Pengeluaran operasional berhasil dicatat!", "success");
+      }
+      else if (ctx.type === 'user') {
+        const name = (document.getElementById("field-user-name")?.value || "").trim();
+        const username = (document.getElementById("field-user-uname")?.value || "").trim().toLowerCase();
+        const password = (document.getElementById("field-user-pwd")?.value || "123").trim();
+        const role = document.getElementById("field-user-role")?.value || "Kasir / POS";
+
+        if (!name || !username) return showToast("Nama dan username wajib diisi!", "error");
+
+        const userPayload = {
+          id: ctx.idx !== null ? users[ctx.idx].id : Date.now(),
+          name,
+          username,
+          password,
+          role,
+          status: "Aktif"
+        };
+
+        if (ctx.idx !== null && users[ctx.idx]) {
+          users[ctx.idx] = userPayload;
+        } else {
+          users.push(userPayload);
+        }
+
+        saveLocalState();
+        sendDataToDrive("save_user", userPayload);
+        renderUsers();
+        closeAppModal();
+        showToast("Data akun pengguna berhasil disimpan!", "success");
+      }
+      else if (ctx.type === 'promo') {
+        const name = (document.getElementById("field-prm-name")?.value || "").trim();
+        const type = document.getElementById("field-prm-type")?.value || "pct";
+        const valInput = parseFloat(document.getElementById("field-prm-val")?.value || 0);
+
+        if (!name || valInput <= 0) return showToast("Nama promo dan nilai potongan wajib diisi!", "error");
+
+        const val = type === "pct" ? (valInput / 100) : valInput;
+        const prmPayload = {
+          id: ctx.idx !== null ? promos[ctx.idx].id : `p-${Date.now().toString().slice(-4)}`,
+          name,
+          type,
+          val,
+          active: true
+        };
+
+        if (ctx.idx !== null && promos[ctx.idx]) {
+          promos[ctx.idx] = prmPayload;
+        } else {
+          promos.push(prmPayload);
+        }
+
+        saveLocalState();
+        sendDataToDrive("save_diskon_promo", prmPayload);
+        renderPromos();
+        closeAppModal();
+        showToast("Pengaturan promo berhasil disimpan!", "success");
+      }
+      else if (ctx.type === 'category') {
+        const catName = (document.getElementById("field-cat-name")?.value || "").trim();
+        if (!catName) return showToast("Nama kategori wajib diisi!", "error");
+
+        if (ctx.idx !== null && categories[ctx.idx]) {
+          categories[ctx.idx] = catName;
+        } else {
+          if (!categories.includes(catName)) categories.push(catName);
+        }
+
+        saveLocalState();
+        renderCategoryPills();
+        renderCategoriesManage();
+        closeAppModal();
+        showToast("Kategori menu berhasil diperbarui!", "success");
+      }
+      else if (ctx.type === 'payment_method') {
+        const name = (document.getElementById("field-pay-name")?.value || "").trim();
+        const icon = (document.getElementById("field-pay-icon")?.value || "💳").trim();
+        const type = document.getElementById("field-pay-type")?.value || "digital";
+
+        if (!name) return showToast("Nama metode pembayaran wajib diisi!", "error");
+
+        if (ctx.idx !== null && paymentMethods[ctx.idx]) {
+          paymentMethods[ctx.idx].name = name;
+          paymentMethods[ctx.idx].icon = icon;
+          paymentMethods[ctx.idx].type = type;
+        } else {
+          paymentMethods.push({ id: `pay-${Date.now()}`, name, icon, type, active: true });
+        }
+
+        saveLocalState();
+        renderPaymentMethods();
+        closeAppModal();
+        showToast("Metode pembayaran berhasil disimpan!", "success");
+      }
+      else if (ctx.type === 'recipe') {
+        const productCode = document.getElementById("field-rcp-prod")?.value;
+        if (!productCode) return showToast("Pilih menu produk terlebih dahulu!", "error");
+
+        const rows = document.querySelectorAll(".recipe-ing-row");
+        const items = [];
+
+        rows.forEach(row => {
+          const matSelect = row.querySelector(".rcp-mat-select");
+          const qtyInput = row.querySelector(".rcp-mat-qty");
+          const matId = parseInt(matSelect?.value);
+          const qty = parseFloat(qtyInput?.value || 0);
+
+          if (matId && qty > 0) {
+            const mat = inventory.find(m => m.id === matId);
+            if (mat) {
+              items.push({
+                matId: mat.id,
+                matName: mat.name,
+                qty: qty,
+                unit: mat.unit
+              });
+            }
+          }
+        });
+
+        if (items.length === 0) {
+          return showToast("Tambahkan minimal satu bahan baku dengan takaran yang valid!", "error");
+        }
+
+        const prod = products.find(p => p.code === productCode);
+        const recipePayload = {
+          productCode: productCode,
+          menuName: prod ? prod.name : productCode,
+          items: items
+        };
+
+        if (ctx.idx !== null && recipes[ctx.idx]) {
+          recipes[ctx.idx] = recipePayload;
+        } else {
+          const existingIdx = recipes.findIndex(r => r.productCode === productCode);
+          if (existingIdx > -1) {
+            recipes[existingIdx] = recipePayload;
+          } else {
+            recipes.push(recipePayload);
+          }
+        }
+
+        saveLocalState();
+        sendDataToDrive("save_resep_bom", recipePayload);
+        renderRecipes();
+        closeAppModal();
+        showToast("Resep & komposisi BOM berhasil disimpan!", "success");
       }
     }
 
-    // Cetak Struk Langsung (Bluetooth RPP02N atau Dialog Cetak Browser)
-    async function printReceiptDirect() {
-      if (!lastOrder) {
-        showToast("Tidak ada transaksi untuk dicetak!", "error");
+    function openRecipeModal(idx = null) {
+      const isEdit = idx !== null;
+      const r = isEdit ? recipes[idx] : { productCode: products[0]?.code || "", items: [] };
+
+      const prodOptions = products.map(p => `
+        <option value="${p.code}" ${r.productCode === p.code ? 'selected' : ''}>
+          ${p.icon || '🍽️'} ${p.name} (${p.code})
+        </option>
+      `).join('');
+
+      const html = `
+        <div class="space-y-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Menu Produk</label>
+            <select id="field-rcp-prod" class="w-full border p-2 rounded text-xs bg-white font-medium" ${isEdit ? 'disabled' : ''}>
+              ${prodOptions}
+            </select>
+          </div>
+
+          <div>
+            <div class="flex justify-between items-center mb-1.5">
+              <label class="block font-bold text-slate-700">Komposisi Bahan Baku Dapur</label>
+              <button type="button" onclick="addRecipeIngredientRow()" class="px-2 py-1 bg-amber-500 hover:bg-amber-600 text-slate-950 rounded text-[10px] font-bold flex items-center gap-1 shadow-xs">
+                + Tambah Bahan
+              </button>
+            </div>
+            <div id="recipe-ingredients-list" class="space-y-1.5 max-h-56 overflow-y-auto pr-1"></div>
+          </div>
+        </div>
+      `;
+
+      showAppModal(isEdit ? "Edit Resep / BOM Komposisi" : "Buat Resep / BOM Komposisi Baru", html, { type: 'recipe', idx }, "Simpan Resep");
+
+      const container = document.getElementById("recipe-ingredients-list");
+      if (container) {
+        container.innerHTML = "";
+        if (r.items && r.items.length > 0) {
+          r.items.forEach(it => addRecipeIngredientRow(it.matId, it.qty));
+        } else {
+          addRecipeIngredientRow();
+        }
+      }
+    }
+
+    function addRecipeIngredientRow(selectedMatId = null, qty = 0.1) {
+      const container = document.getElementById("recipe-ingredients-list");
+      if (!container) return;
+
+      if (inventory.length === 0) {
+        container.innerHTML = `<p class="text-rose-500 text-[11px] font-medium p-2 bg-rose-50 rounded">Belum ada bahan baku di dapur. Silakan tambahkan di modul Persediaan > Stok Bahan terlebih dahulu.</p>`;
         return;
       }
 
-      if (bluetoothCharacteristic && bluetoothDevice && bluetoothDevice.gatt.connected) {
-        try {
-          showToast("Mengirim struk ke printer Bluetooth RPP02N...", "info");
-          const escPosData = buildEscPosReceipt(lastOrder);
-          await sendEscPosToBluetooth(escPosData);
-          showToast("Struk berhasil dicetak di RPP02N!", "success");
-        } catch (err) {
-          console.error("Gagal cetak Bluetooth:", err);
-          showToast(`Gagal mencetak ke RPP02N: ${err.message}. Membuka dialog cetak...`, "error");
-          window.print();
-        }
-      } else {
-        // Jika belum terhubung via bluetooth, tawarkan hubungkan atau gunakan dialog cetak browser
-        showToast("Printer Bluetooth belum tersambung. Menggunakan dialog cetak browser.", "info");
-        window.print();
-      }
-    }
-
-    // Tes Cetak RPP02N
-    async function testPrintThermal() {
-      const mockOrder = {
-        id: "#TEST-001",
-        time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
-        consumer: "Offline (Tes Cetak)",
-        items: "1x Mozzarella Waffle, 1x Es Kopi Susu",
-        pay: "Tunai",
-        subtotal: 35000,
-        tax: 3500,
-        disc: 0,
-        total: 38500,
-        cash: 50000,
-        chg: 11500,
-        cartItems: [
-          { name: "Mozzarella Waffle", price: 20000, qty: 1 },
-          { name: "Es Kopi Susu Aren", price: 15000, qty: 1 }
-        ]
-      };
-
-      if (bluetoothCharacteristic && bluetoothDevice && bluetoothDevice.gatt.connected) {
-        try {
-          showToast("Mengirim sinyal tes ke RPP02N...", "info");
-          const escPosData = buildEscPosReceipt(mockOrder);
-          await sendEscPosToBluetooth(escPosData);
-          showToast("Tes cetak printer thermal RPP02N berhasil!", "success");
-        } catch (err) {
-          console.error(err);
-          showToast(`Gagal tes cetak: ${err.message}`, "error");
-        }
-      } else {
-        showToast("Silakan klik tombol 'Hubungkan RPP02N' terlebih dahulu!", "info");
-        connectBluetoothPrinter();
-      }
-    }
-
-    function savePrinterConfig() {
-      printerConfig.paperWidth = document.getElementById("cfg-printer-paper")?.value || "58";
-      printerConfig.driver = document.getElementById("cfg-printer-driver")?.value || "bluetooth_direct";
-      printerConfig.autoPrint = document.getElementById("cfg-printer-autoprint")?.checked ?? false;
-      printerConfig.footerText = document.getElementById("cfg-printer-footer")?.value || "Terima kasih atas kunjungan Anda!";
-      saveLocalState();
-      showToast("Pengaturan printer thermal diperbarui!", "success");
-    }
-
-    function renderHistory() {
-      const b = document.getElementById("history-sales-rows");
-      if (!b) return;
-      b.innerHTML = transactions.length === 0 ? `<tr><td colspan="7" class="p-4 text-center text-slate-400">Belum ada riwayat transaksi penjualan.</td></tr>` : transactions.map((t, idx) => `
-        <tr class="hover:bg-slate-50">
-          <td class="p-2 font-mono font-bold text-amber-600">${t.id}</td>
-          <td class="p-2 text-slate-500">${t.time}</td>
-          <td class="p-2 font-semibold text-slate-800">${t.consumer}</td>
-          <td class="p-2 text-slate-600 truncate max-w-xs">${t.items}</td>
-          <td class="p-2"><span class="px-1.5 py-0.5 bg-slate-100 rounded font-bold">${t.pay}</span></td>
-          <td class="p-2 text-right font-extrabold text-slate-900">Rp ${t.total.toLocaleString("id-ID")}</td>
-          <td class="p-2 text-center flex justify-center gap-1.5">
-            <button onclick="editTransaction(${idx})" class="p-1 text-sky-600 hover:bg-sky-50 rounded" title="Edit"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
-            <button onclick="deleteTransaction(${idx})" class="p-1 text-rose-600 hover:bg-rose-50 rounded" title="Hapus"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
-          </td>
-        </tr>
+      const defaultMat = selectedMatId ? inventory.find(m => m.id === selectedMatId) : inventory[0];
+      const matOptions = inventory.map(m => `
+        <option value="${m.id}" data-unit="${m.unit}" ${selectedMatId === m.id ? 'selected' : ''}>
+          ${m.name} (${m.unit})
+        </option>
       `).join('');
-      lucide.createIcons();
+
+      const row = document.createElement("div");
+      row.className = "recipe-ing-row flex items-center gap-2 p-1.5 bg-slate-50 border border-slate-200 rounded-lg";
+      row.innerHTML = `
+        <div class="flex-1">
+          <select onchange="onRecipeMaterialChange(this)" class="rcp-mat-select w-full border border-slate-300 p-1.5 rounded text-xs bg-white font-medium">
+            ${matOptions}
+          </select>
+        </div>
+        <div class="w-24 flex items-center gap-1">
+          <input type="number" step="0.001" min="0.001" value="${qty}" class="rcp-mat-qty w-full border border-slate-300 p-1.5 rounded text-xs font-bold text-center" placeholder="Takaran" />
+          <span class="rcp-mat-unit text-[10px] text-slate-500 font-bold shrink-0">${defaultMat ? defaultMat.unit : 'Kg'}</span>
+        </div>
+        <button type="button" onclick="this.closest('.recipe-ing-row').remove()" class="p-1.5 text-rose-500 hover:bg-rose-50 hover:text-rose-700 rounded" title="Hapus Baris">✕</button>
+      `;
+      container.appendChild(row);
+    }
+
+    function onRecipeMaterialChange(select) {
+      const selectedOption = select.options[select.selectedIndex];
+      const unit = selectedOption.getAttribute("data-unit") || "Kg";
+      const row = select.closest(".recipe-ing-row");
+      if (row) {
+        const unitEl = row.querySelector(".rcp-mat-unit");
+        if (unitEl) unitEl.innerText = unit;
+      }
+    }
+
+    function openProductModal(idx = null) {
+      const isEdit = idx !== null;
+      const p = isEdit ? products[idx] : { code: `WFL-0${products.length + 1}`, name: "", category: "Waffle", hpp: 10000, price: 20000, icon: "🧇" };
+      const catOptions = categories.filter(c => c !== "Semua").map(c => `<option value="${c}" ${p.category === c ? 'selected' : ''}>${c}</option>`).join('');
+
+      const html = `
+        <div class="space-y-2">
+          <div class="grid grid-cols-3 gap-2">
+            <div>
+              <label class="block font-bold text-slate-700">Kode</label>
+              <input type="text" id="field-prod-code" value="${p.code}" class="w-full border p-1.5 rounded font-mono text-xs" />
+            </div>
+            <div class="col-span-2">
+              <label class="block font-bold text-slate-700">Nama Menu</label>
+              <input type="text" id="field-prod-name" required value="${p.name}" placeholder="Waffle Mozzarella" class="w-full border p-1.5 rounded text-xs" />
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block font-bold text-slate-700">Kategori</label>
+              <select id="field-prod-category" class="w-full border p-1.5 rounded text-xs bg-white">${catOptions}</select>
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700">Ikon Emoji</label>
+              <input type="text" id="field-prod-icon" value="${p.icon || '🧇'}" class="w-full border p-1.5 rounded text-xs" />
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block font-bold text-slate-700">HPP (Rp)</label>
+              <input type="number" id="field-prod-hpp" value="${p.hpp || 0}" class="w-full border p-1.5 rounded text-xs" />
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700">Harga Jual (Rp)</label>
+              <input type="number" id="field-prod-price" required value="${p.price}" class="w-full border p-1.5 rounded text-xs font-bold" />
+            </div>
+          </div>
+        </div>
+      `;
+      showAppModal(isEdit ? "Edit Menu Produk" : "Tambah Menu Produk", html, { type: 'product', idx });
+    }
+
+    function deleteProduct(idx) {
+      if (!products[idx]) return;
+      showConfirmModal(`Hapus produk "${products[idx].name}"?`, () => {
+        products.splice(idx, 1);
+        saveLocalState();
+        renderProductMaster();
+        renderCatalog();
+        showToast("Produk berhasil dihapus!", "info");
+      });
+    }
+
+    function openSupplierModal(idx = null) {
+      const isEdit = idx !== null;
+      const s = isEdit ? suppliers[idx] : { name: "", category: "Bahan Pokok", phone: "08", address: "Jakarta" };
+      const html = `
+        <div class="space-y-2">
+          <div><label class="block font-bold text-slate-700">Nama Supplier</label><input type="text" id="field-sup-name" required value="${s.name}" class="w-full border p-1.5 rounded text-xs" /></div>
+          <div><label class="block font-bold text-slate-700">Kategori</label><input type="text" id="field-sup-category" value="${s.category}" class="w-full border p-1.5 rounded text-xs" /></div>
+          <div><label class="block font-bold text-slate-700">Telepon / WhatsApp</label><input type="text" id="field-sup-phone" value="${s.phone}" class="w-full border p-1.5 rounded text-xs" /></div>
+          <div><label class="block font-bold text-slate-700">Alamat</label><input type="text" id="field-sup-address" value="${s.address}" class="w-full border p-1.5 rounded text-xs" /></div>
+        </div>
+      `;
+      showAppModal(isEdit ? "Edit Supplier" : "Tambah Supplier Baru", html, { type: 'supplier', idx });
+    }
+
+    function deleteSupplier(idx) {
+      if (!suppliers[idx]) return;
+      showConfirmModal(`Hapus supplier "${suppliers[idx].name}"?`, () => {
+        suppliers.splice(idx, 1);
+        saveLocalState();
+        renderSuppliers();
+        showToast("Supplier dihapus!", "info");
+      });
+    }
+
+    function openMaterialModal(idx = null) {
+      const isEdit = idx !== null;
+      const m = isEdit ? inventory[idx] : { name: "", unit: "Kg", stock: 10, min: 3 };
+      const html = `
+        <div class="space-y-2">
+          <div><label class="block font-bold text-slate-700">Nama Bahan Baku</label><input type="text" id="field-mat-name" required value="${m.name}" placeholder="Tepung Waffle" class="w-full border p-1.5 rounded text-xs" /></div>
+          <div class="grid grid-cols-3 gap-2">
+            <div><label class="block font-bold text-slate-700">Satuan</label><input type="text" id="field-mat-unit" value="${m.unit}" placeholder="Kg" class="w-full border p-1.5 rounded text-xs" /></div>
+            <div><label class="block font-bold text-slate-700">Stok</label><input type="number" step="0.01" id="field-mat-stock" value="${m.stock}" class="w-full border p-1.5 rounded text-xs" /></div>
+            <div><label class="block font-bold text-slate-700">Batas Min</label><input type="number" step="0.01" id="field-mat-min" value="${m.min}" class="w-full border p-1.5 rounded text-xs" /></div>
+          </div>
+        </div>
+      `;
+      showAppModal(isEdit ? "Edit Bahan Baku" : "Tambah Bahan Baku", html, { type: 'material', idx });
+    }
+
+    function deleteMaterial(idx) {
+      if (!inventory[idx]) return;
+      showConfirmModal(`Hapus bahan baku "${inventory[idx].name}"?`, () => {
+        inventory.splice(idx, 1);
+        saveLocalState();
+        renderInventory();
+        updateDashboard();
+        showToast("Bahan baku dihapus!", "info");
+      });
+    }
+
+    function openPurchaseModal(idx = null) {
+      const isEdit = idx !== null;
+      const p = isEdit ? purchases[idx] : { supplier: suppliers[0]?.name || "Supplier", bahan: inventory[0]?.name || "Bahan", qty: 5, cost: 100000 };
+      const supOpts = suppliers.map(s => `<option value="${s.name}" ${p.supplier === s.name ? 'selected' : ''}>${s.name}</option>`).join('');
+      const matOpts = inventory.map(m => `<option value="${m.name}" ${p.bahan === m.name ? 'selected' : ''}>${m.name} (${m.unit})</option>`).join('');
+
+      const html = `
+        <div class="space-y-2">
+          <div><label class="block font-bold text-slate-700">Supplier</label><select id="field-po-supplier" class="w-full border p-1.5 rounded text-xs bg-white">${supOpts}</select></div>
+          <div><label class="block font-bold text-slate-700">Bahan yang Dibeli</label><select id="field-po-bahan" class="w-full border p-1.5 rounded text-xs bg-white">${matOpts}</select></div>
+          <div class="grid grid-cols-2 gap-2">
+            <div><label class="block font-bold text-slate-700">Kuantitas</label><input type="number" step="0.01" id="field-po-qty" required value="${p.qty}" class="w-full border p-1.5 rounded text-xs" /></div>
+            <div><label class="block font-bold text-slate-700">Total Biaya (Rp)</label><input type="number" id="field-po-cost" required value="${p.cost}" class="w-full border p-1.5 rounded text-xs font-bold" /></div>
+          </div>
+        </div>
+      `;
+      showAppModal(isEdit ? "Edit PO Pembelian" : "Input Pembelian Bahan (PO)", html, { type: 'purchase', idx });
+    }
+
+    function deletePurchase(idx) {
+      if (!purchases[idx]) return;
+      showConfirmModal(`Hapus catatan PO "${purchases[idx].noPO}"?`, () => {
+        purchases.splice(idx, 1);
+        saveLocalState();
+        renderPurchases();
+        showToast("Catatan PO dihapus!", "info");
+      });
+    }
+
+    function openStockOpnameModal(idx = null) {
+      const isEdit = idx !== null;
+      const o = isEdit ? opnames[idx] : { bahanName: inventory[0]?.name || "", physicalStock: inventory[0]?.stock || 0, note: "Pengecekan Fisik Mingguan" };
+      const matOpts = inventory.map(m => `<option value="${m.name}" ${o.bahanName === m.name ? 'selected' : ''}>${m.name} (Stok Sistem: ${m.stock} ${m.unit})</option>`).join('');
+
+      const html = `
+        <div class="space-y-2">
+          <div><label class="block font-bold text-slate-700">Pilih Bahan Baku</label><select id="field-opn-bahan" class="w-full border p-1.5 rounded text-xs bg-white">${matOpts}</select></div>
+          <div><label class="block font-bold text-slate-700">Stok Fisik Aktual</label><input type="number" step="0.01" id="field-opn-physical" required value="${o.physicalStock}" class="w-full border p-1.5 rounded text-xs font-bold" /></div>
+          <div><label class="block font-bold text-slate-700">Catatan</label><input type="text" id="field-opn-note" value="${o.note}" class="w-full border p-1.5 rounded text-xs" /></div>
+        </div>
+      `;
+      showAppModal(isEdit ? "Edit Data Opname" : "Input Stock Opname Fisik", html, { type: 'opname', idx });
+    }
+
+    function deleteOpname(idx) {
+      if (!opnames[idx]) return;
+      showConfirmModal(`Hapus log opname "${opnames[idx].idOpname}"?`, () => {
+        opnames.splice(idx, 1);
+        saveLocalState();
+        renderOpnames();
+        showToast("Log stock opname dihapus!", "info");
+      });
+    }
+
+    function openAddExpenseModal(idx = null) {
+      const isEdit = idx !== null;
+      const e = isEdit ? expenses[idx] : { category: "Listrik & Air", note: "", amount: 50000, date: new Date().toISOString().split('T')[0] };
+
+      const html = `
+        <div class="space-y-2">
+          <div><label class="block font-bold text-slate-700">Tanggal</label><input type="date" id="field-exp-date" value="${e.date || ''}" class="w-full border p-1.5 rounded text-xs" /></div>
+          <div>
+            <label class="block font-bold text-slate-700">Kategori Biaya</label>
+            <select id="field-exp-category" class="w-full border p-1.5 rounded text-xs bg-white">
+              <option value="Listrik & Air" ${e.category === 'Listrik & Air' ? 'selected' : ''}>Listrik & Air</option>
+              <option value="Gas Dapur" ${e.category === 'Gas Dapur' ? 'selected' : ''}>Gas Dapur</option>
+              <option value="Gaji Karyawan" ${e.category === 'Gaji Karyawan' ? 'selected' : ''}>Gaji Karyawan</option>
+              <option value="Kemasan & Plastik" ${e.category === 'Kemasan & Plastik' ? 'selected' : ''}>Kemasan & Plastik</option>
+              <option value="Lain-lain" ${e.category === 'Lain-lain' ? 'selected' : ''}>Lain-lain</option>
+            </select>
+          </div>
+          <div><label class="block font-bold text-slate-700">Keterangan</label><input type="text" id="field-exp-note" required value="${e.note || ''}" placeholder="Beli Gas Elpiji" class="w-full border p-1.5 rounded text-xs" /></div>
+          <div><label class="block font-bold text-slate-700">Nominal Biaya (Rp)</label><input type="number" id="field-exp-amount" required value="${e.amount}" class="w-full border p-1.5 rounded text-xs font-bold text-rose-600" /></div>
+        </div>
+      `;
+      showAppModal(isEdit ? "Edit Catatan Pengeluaran" : "Catat Beban Operasional", html, { type: 'expense', idx });
+    }
+
+    function deleteExpense(idx) {
+      if (!expenses[idx]) return;
+      showConfirmModal(`Hapus catatan pengeluaran ini?`, () => {
+        expenses.splice(idx, 1);
+        saveLocalState();
+        renderExpenses();
+        updateDashboard();
+        showToast("Catatan pengeluaran dihapus!", "info");
+      });
+    }
+
+    function openUserModal(idx = null) {
+      const isEdit = idx !== null;
+      const u = isEdit ? users[idx] : { name: "", username: "", password: "123", role: "Kasir / POS" };
+      const html = `
+        <div class="space-y-2">
+          <div><label class="block font-bold text-slate-700">Nama Lengkap</label><input type="text" id="field-user-name" required value="${u.name}" class="w-full border p-1.5 rounded text-xs" /></div>
+          <div class="grid grid-cols-2 gap-2">
+            <div><label class="block font-bold text-slate-700">Username</label><input type="text" id="field-user-uname" required value="${u.username}" class="w-full border p-1.5 rounded text-xs" /></div>
+            <div><label class="block font-bold text-slate-700">Password</label><input type="text" id="field-user-pwd" required value="${u.password || '123'}" class="w-full border p-1.5 rounded text-xs font-mono" /></div>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700">Peran Akun</label>
+            <select id="field-user-role" class="w-full border p-1.5 rounded text-xs bg-white">
+              <option value="Kasir / POS" ${u.role === 'Kasir / POS' ? 'selected' : ''}>Kasir / POS</option>
+              <option value="Admin Gudang & Menu" ${u.role === 'Admin Gudang & Menu' ? 'selected' : ''}>Admin Gudang & Menu</option>
+              <option value="Owner / Super Admin" ${u.role === 'Owner / Super Admin' ? 'selected' : ''}>Owner / Super Admin</option>
+            </select>
+          </div>
+        </div>
+      `;
+      showAppModal(isEdit ? "Edit Akun Pengguna" : "Tambah User Karyawan Baru", html, { type: 'user', idx });
+    }
+
+    function deleteUser(idx) {
+      if (!users[idx]) return;
+      if (users[idx].username === 'owner') return showToast("Akun Owner tidak dapat dihapus!", "error");
+      showConfirmModal(`Hapus akun user "${users[idx].name}"?`, () => {
+        users.splice(idx, 1);
+        saveLocalState();
+        renderUsers();
+        showToast("Akun pengguna dihapus!", "info");
+      });
+    }
+
+    function openPromoModal(idx = null) {
+      const isEdit = idx !== null;
+      const p = isEdit ? promos[idx] : { name: "", type: "pct", val: 0.10 };
+      const displayVal = p.type === "pct" ? (p.val * 100) : p.val;
+
+      const html = `
+        <div class="space-y-2">
+          <div><label class="block font-bold text-slate-700">Nama Voucher</label><input type="text" id="field-prm-name" required value="${p.name}" placeholder="Diskon Member 10%" class="w-full border p-1.5 rounded text-xs" /></div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block font-bold text-slate-700">Tipe</label>
+              <select id="field-prm-type" class="w-full border p-1.5 rounded text-xs bg-white">
+                <option value="pct" ${p.type === 'pct' ? 'selected' : ''}>Persentase (%)</option>
+                <option value="nom" ${p.type === 'nom' ? 'selected' : ''}>Nominal Tetap (Rp)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700">Nilai</label>
+              <input type="number" id="field-prm-val" required value="${displayVal}" class="w-full border p-1.5 rounded text-xs font-bold" />
+            </div>
+          </div>
+        </div>
+      `;
+      showAppModal(isEdit ? "Edit Promo" : "Tambah Promo Baru", html, { type: 'promo', idx });
+    }
+
+    function togglePromoActive(idx) {
+      if (!promos[idx]) return;
+      promos[idx].active = !promos[idx].active;
+      saveLocalState();
+      renderPromos();
+      showToast(`Promo ${promos[idx].name} diperbarui!`, "info");
+    }
+
+    function deletePromo(idx) {
+      if (!promos[idx]) return;
+      showConfirmModal(`Hapus promo "${promos[idx].name}"?`, () => {
+        promos.splice(idx, 1);
+        saveLocalState();
+        renderPromos();
+        showToast("Promo dihapus!", "info");
+      });
+    }
+
+    function openCategoryModal(idx = null) {
+      const isEdit = idx !== null;
+      const c = isEdit ? categories[idx] : "";
+      const html = `
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Nama Kategori</label>
+          <input type="text" id="field-cat-name" required value="${c}" placeholder="Dessert" class="w-full border p-2 rounded text-xs" />
+        </div>
+      `;
+      showAppModal(isEdit ? "Edit Kategori" : "Tambah Kategori Baru", html, { type: 'category', idx });
+    }
+
+    function deleteCategory(idx) {
+      if (!categories[idx]) return;
+      showConfirmModal(`Hapus kategori "${categories[idx]}"?`, () => {
+        categories.splice(idx, 1);
+        saveLocalState();
+        renderCategoryPills();
+        renderCategoriesManage();
+        showToast("Kategori dihapus!", "info");
+      });
+    }
+
+    function deleteRecipe(idx) {
+      if (!recipes[idx]) return;
+      showConfirmModal(`Hapus resep "${recipes[idx].productCode}"?`, () => {
+        recipes.splice(idx, 1);
+        saveLocalState();
+        renderRecipes();
+        showToast("Resep BOM dihapus!", "info");
+      });
+    }
+
+    function openPaymentMethodModal(idx = null) {
+      const isEdit = idx !== null;
+      const m = isEdit ? paymentMethods[idx] : { name: "", icon: "💳", type: "digital", active: true };
+      const html = `
+        <div class="space-y-2">
+          <div><label class="block font-bold text-slate-700">Nama Saluran</label><input type="text" id="field-pay-name" required value="${m.name}" placeholder="Transfer BCA" class="w-full border p-1.5 rounded text-xs" /></div>
+          <div><label class="block font-bold text-slate-700">Ikon Emoji</label><input type="text" id="field-pay-icon" required value="${m.icon || '💳'}" class="w-full border p-1.5 rounded text-xs" /></div>
+          <div>
+            <label class="block font-bold text-slate-700">Tipe</label>
+            <select id="field-pay-type" class="w-full border p-1.5 rounded text-xs bg-white">
+              <option value="cash" ${m.type === 'cash' ? 'selected' : ''}>Tunai</option>
+              <option value="digital" ${m.type === 'digital' ? 'selected' : ''}>Digital / QRIS</option>
+              <option value="card" ${m.type === 'card' ? 'selected' : ''}>Kartu Debit / EDC</option>
+            </select>
+          </div>
+        </div>
+      `;
+      showAppModal(isEdit ? "Edit Metode Pembayaran" : "Tambah Metode Pembayaran", html, { type: 'payment_method', idx });
+    }
+
+    function deletePaymentMethod(idx) {
+      if (!paymentMethods[idx]) return;
+      showConfirmModal(`Hapus metode pembayaran "${paymentMethods[idx].name}"?`, () => {
+        paymentMethods.splice(idx, 1);
+        saveLocalState();
+        renderPaymentMethods();
+        showToast("Metode pembayaran dihapus!", "info");
+      });
+    }
+
+    function togglePaymentMethodActive(idx) {
+      if (!paymentMethods[idx]) return;
+      paymentMethods[idx].active = !paymentMethods[idx].active;
+      saveLocalState();
+      renderPaymentMethods();
+      showToast(`Metode bayar ${paymentMethods[idx].name} diperbarui!`, "info");
+    }
+
+    function openTaxConfigModal() {
+      const taxActive = document.getElementById("cfg-tax-active")?.checked ?? false;
+      const html = `
+        <div class="space-y-2">
+          <p class="text-xs text-slate-600 font-medium">Pengaturan Pajak Restoran Standar (PB1):</p>
+          <label class="flex items-center gap-2 font-bold text-slate-800">
+            <input type="checkbox" id="field-tax-toggle" ${taxActive ? 'checked' : ''} class="rounded text-amber-500" />
+            Aktifkan Pajak Resto PB1 (10%)
+          </label>
+        </div>
+      `;
+      showAppModal("Pengaturan Tarif Pajak", html, { type: 'tax_cfg' }, "Simpan Pajak");
     }
 
     function renderProductMaster() {
@@ -1859,7 +2655,7 @@
         <div class="p-3 bg-slate-50 border border-slate-200 rounded-lg flex justify-between items-center">
           <span class="font-bold text-slate-800">${c}</span>
           <div class="flex gap-1">
-            <button onclick="editCategory(${idx + 1})" class="p-1 text-sky-600 hover:bg-sky-100 rounded" title="Edit"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
+            <button onclick="openCategoryModal(${idx + 1})" class="p-1 text-sky-600 hover:bg-sky-100 rounded" title="Edit"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
             <button onclick="deleteCategory(${idx + 1})" class="p-1 text-rose-600 hover:bg-rose-100 rounded" title="Hapus"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
           </div>
         </div>
@@ -2077,846 +2873,23 @@
       lucide.createIcons();
     }
 
-    function togglePaymentMethodActive(idx) {
-      if (!paymentMethods[idx]) return;
-      paymentMethods[idx].active = !paymentMethods[idx].active;
-      saveLocalState();
-      renderPaymentMethods();
-      showToast(`Metode pembayaran ${paymentMethods[idx].name} diperbarui!`, "info");
-    }
-
-    function openPaymentMethodModal(idx = null) {
-      const isEdit = idx !== null;
-      const m = isEdit ? paymentMethods[idx] : { name: "", icon: "💳", type: "digital", active: true };
-
-      const html = `
-        <div class="space-y-2">
-          <div>
-            <label class="block text-slate-700 font-bold mb-1">Nama Metode Pembayaran</label>
-            <input type="text" id="field-pay-name" required value="${m.name}" placeholder="Contoh: QRIS BCA / Transfer Mandiri" class="w-full border p-2 rounded text-xs" />
-          </div>
-          <div>
-            <label class="block text-slate-700 font-bold mb-1">Ikon / Emoji</label>
-            <input type="text" id="field-pay-icon" required value="${m.icon || '💳'}" placeholder="Contoh: 📱 / 💳 / 💵" class="w-full border p-2 rounded text-xs" />
-          </div>
-          <div>
-            <label class="block text-slate-700 font-bold mb-1">Tipe Saluran</label>
-            <select id="field-pay-type" class="w-full border p-2 rounded text-xs bg-white font-medium">
-              <option value="cash" ${m.type === 'cash' ? 'selected' : ''}>Tunai / Cash</option>
-              <option value="digital" ${m.type === 'digital' ? 'selected' : ''}>Digital / QRIS / e-Wallet</option>
-              <option value="card" ${m.type === 'card' ? 'selected' : ''}>Kartu Debit / Kredit / EDC</option>
-            </select>
-          </div>
-        </div>
-      `;
-
-      showAppModal(isEdit ? "Edit Metode Pembayaran" : "Tambah Metode Pembayaran Baru", html, {
-        type: 'payment_method',
-        idx: idx
-      }, isEdit ? "Simpan Perubahan" : "Tambah Metode");
-    }
-
-    function deletePaymentMethod(idx) {
-      if (!paymentMethods[idx]) return;
-      showConfirmModal(`Hapus metode pembayaran "${paymentMethods[idx].name}"?`, () => {
-        paymentMethods.splice(idx, 1);
-        saveLocalState();
-        renderPaymentMethods();
-        showToast("Metode pembayaran telah dihapus!", "info");
-      });
-    }
-
-    function showAppModal(title, fieldsHtml, context, submitLabel = "Simpan Data") {
-      currentFormContext = context;
-      const titleEl = document.getElementById("form-modal-title");
-      const fieldsEl = document.getElementById("form-modal-fields");
-      const submitBtn = document.getElementById("form-modal-submit-btn");
-
-      if (titleEl) titleEl.innerText = title;
-      if (fieldsEl) fieldsEl.innerHTML = fieldsHtml;
-      if (submitBtn) submitBtn.innerText = submitLabel;
-
-      const modal = document.getElementById("app-form-modal");
-      if (modal) modal.classList.remove("hidden");
+    function renderHistory() {
+      const b = document.getElementById("history-sales-rows");
+      if (!b) return;
+      b.innerHTML = transactions.length === 0 ? `<tr><td colspan="7" class="p-4 text-center text-slate-400">Belum ada riwayat transaksi penjualan.</td></tr>` : transactions.map((t, idx) => `
+        <tr class="hover:bg-slate-50">
+          <td class="p-2 font-mono font-bold text-amber-600">${t.id}</td>
+          <td class="p-2 text-slate-500">${t.time}</td>
+          <td class="p-2 font-semibold text-slate-800">${t.consumer}</td>
+          <td class="p-2 text-slate-600 truncate max-w-xs">${t.items}</td>
+          <td class="p-2"><span class="px-1.5 py-0.5 bg-slate-100 rounded font-bold">${t.pay}</span></td>
+          <td class="p-2 text-right font-extrabold text-slate-900">Rp ${t.total.toLocaleString("id-ID")}</td>
+          <td class="p-2 text-center flex justify-center gap-1.5">
+            <button onclick="deleteTransaction(${idx})" class="p-1 text-rose-600 hover:bg-rose-50 rounded" title="Batalkan (Void)"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+          </td>
+        </tr>
+      `).join('');
       lucide.createIcons();
-    }
-
-    function closeAppModal() {
-      const modal = document.getElementById("app-form-modal");
-      if (modal) modal.classList.add("hidden");
-      currentFormContext = null;
-    }
-
-    function showConfirmModal(message, onConfirm) {
-      const modal = document.getElementById("app-confirm-modal");
-      const msgEl = document.getElementById("confirm-modal-msg");
-      const actBtn = document.getElementById("confirm-modal-action-btn");
-
-      if (msgEl) msgEl.innerText = message;
-      if (actBtn) {
-        actBtn.onclick = () => {
-          if (onConfirm) onConfirm();
-          closeConfirmModal();
-        };
-      }
-      if (modal) modal.classList.remove("hidden");
-    }
-
-    function closeConfirmModal() {
-      const modal = document.getElementById("app-confirm-modal");
-      if (modal) modal.classList.add("hidden");
-    }
-
-    function handleFormSubmit(e) {
-      if (e) e.preventDefault();
-      if (!currentFormContext) return closeAppModal();
-
-      const ctx = currentFormContext;
-
-      if (ctx.type === 'payment_method') {
-        const name = (document.getElementById("field-pay-name")?.value || "").trim();
-        const icon = (document.getElementById("field-pay-icon")?.value || "💳").trim();
-        const type = document.getElementById("field-pay-type")?.value || "digital";
-
-        if (!name) return showToast("Nama metode pembayaran wajib diisi!", "error");
-
-        if (ctx.idx !== null && paymentMethods[ctx.idx]) {
-          paymentMethods[ctx.idx].name = name;
-          paymentMethods[ctx.idx].icon = icon;
-          paymentMethods[ctx.idx].type = type;
-        } else {
-          paymentMethods.push({ id: `pay-${Date.now()}`, name, icon, type, active: true });
-        }
-
-        saveLocalState();
-        sendDataToDrive("save_metode_bayar", { name, icon, type, active: true });
-        renderPaymentMethods();
-        closeAppModal();
-        showToast("Metode pembayaran berhasil disimpan!", "success");
-      }
-      else if (ctx.type === 'tax_cfg') {
-        const toggle = document.getElementById("field-tax-toggle")?.checked ?? true;
-        const mainTaxToggle = document.getElementById("cfg-tax-active");
-        if (mainTaxToggle) mainTaxToggle.checked = toggle;
-        calculateCart();
-        closeAppModal();
-        showToast("Pengaturan pajak PB1 berhasil diperbarui!", "success");
-      }
-      else if (ctx.type === 'product') {
-        const code = (document.getElementById("field-prod-code")?.value || "").trim();
-        const name = (document.getElementById("field-prod-name")?.value || "").trim();
-        const category = document.getElementById("field-prod-category")?.value || "Makanan";
-        const hpp = parseFloat(document.getElementById("field-prod-hpp")?.value || 0);
-        const price = parseFloat(document.getElementById("field-prod-price")?.value || 0);
-        const icon = (document.getElementById("field-prod-icon")?.value || "🍽️").trim();
-
-        if (!name) return showToast("Nama produk wajib diisi!", "error");
-
-        const payload = { code: code || `MNU-${products.length + 1}`, name, category, hpp, price, icon, stockReady: 20 };
-
-        if (ctx.idx !== null && products[ctx.idx]) {
-          products[ctx.idx] = { ...products[ctx.idx], ...payload };
-        } else {
-          products.push({ id: Date.now(), ...payload });
-        }
-
-        saveLocalState();
-        sendDataToDrive("save_produk", payload);
-        renderProductMaster();
-        renderCatalog();
-        closeAppModal();
-        showToast("Produk menu berhasil disimpan!", "success");
-      }
-      else if (ctx.type === 'supplier') {
-        const name = (document.getElementById("field-sup-name")?.value || "").trim();
-        const category = (document.getElementById("field-sup-category")?.value || "").trim();
-        const phone = (document.getElementById("field-sup-phone")?.value || "").trim();
-        const address = (document.getElementById("field-sup-address")?.value || "").trim();
-
-        if (!name) return showToast("Nama supplier wajib diisi!", "error");
-
-        const supPayload = { id: ctx.idx !== null ? suppliers[ctx.idx].id : Date.now(), name, category, phone, address };
-
-        if (ctx.idx !== null && suppliers[ctx.idx]) {
-          suppliers[ctx.idx] = supPayload;
-        } else {
-          suppliers.push(supPayload);
-        }
-
-        saveLocalState();
-        sendDataToDrive("save_supplier", supPayload);
-        renderSuppliers();
-        closeAppModal();
-        showToast("Data supplier berhasil disimpan!", "success");
-      }
-      else if (ctx.type === 'material') {
-        const name = (document.getElementById("field-mat-name")?.value || "").trim();
-        const unit = (document.getElementById("field-mat-unit")?.value || "Kg").trim();
-        const stock = parseFloat(document.getElementById("field-mat-stock")?.value || 0);
-        const min = parseFloat(document.getElementById("field-mat-min")?.value || 0);
-
-        if (!name) return showToast("Nama bahan baku wajib diisi!", "error");
-
-        const status = stock <= min ? "Kritis" : "Aman";
-        const matPayload = { id: ctx.idx !== null ? inventory[ctx.idx].id : Date.now(), name, unit, stock, min, status };
-
-        if (ctx.idx !== null && inventory[ctx.idx]) {
-          inventory[ctx.idx] = matPayload;
-        } else {
-          inventory.push(matPayload);
-        }
-
-        saveLocalState();
-        sendDataToDrive("sync_stok_bahan", { inventoryList: inventory });
-        renderInventory();
-        updateDashboard();
-        closeAppModal();
-        showToast("Bahan baku dapur berhasil disimpan!", "success");
-      }
-      else if (ctx.type === 'purchase') {
-        const supplier = (document.getElementById("field-po-supplier")?.value || "").trim();
-        const bahan = (document.getElementById("field-po-bahan")?.value || "").trim();
-        const qty = parseFloat(document.getElementById("field-po-qty")?.value || 0);
-        const cost = parseFloat(document.getElementById("field-po-cost")?.value || 0);
-        const timeNow = new Date().toLocaleDateString('id-ID') + ' ' + new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-
-        if (!bahan || qty <= 0) return showToast("Bahan dan kuantitas wajib diisi dengan benar!", "error");
-
-        const poPayload = {
-          noPO: ctx.idx !== null ? purchases[ctx.idx].noPO : `PO-${Date.now().toString().slice(-4)}`,
-          time: timeNow,
-          supplier: supplier || "Mitra Mandiri",
-          bahan,
-          qty,
-          cost
-        };
-
-        if (ctx.idx !== null && purchases[ctx.idx]) {
-          purchases[ctx.idx] = poPayload;
-        } else {
-          purchases.unshift(poPayload);
-          // Tambah stok bahan otomatis
-          const mat = inventory.find(m => m.name.toLowerCase() === bahan.toLowerCase());
-          if (mat) {
-            mat.stock = +(mat.stock + qty).toFixed(2);
-            mat.status = mat.stock <= mat.min ? "Kritis" : "Aman";
-          }
-        }
-
-        saveLocalState();
-        sendDataToDrive("save_pembelian_po", poPayload);
-        sendDataToDrive("sync_stok_bahan", { inventoryList: inventory });
-        renderPurchases();
-        renderInventory();
-        updateDashboard();
-        closeAppModal();
-        showToast("Catatan PO pengadaan berhasil disimpan!", "success");
-      }
-      else if (ctx.type === 'opname') {
-        const bahanName = document.getElementById("field-opn-bahan")?.value;
-        const physicalStock = parseFloat(document.getElementById("field-opn-physical")?.value || 0);
-        const note = (document.getElementById("field-opn-note")?.value || "Pengecekan Rutin").trim();
-        const mat = inventory.find(m => m.name === bahanName);
-
-        if (!mat) return showToast("Bahan tidak valid!", "error");
-
-        const diff = +(physicalStock - mat.stock).toFixed(2);
-        const timeNow = new Date().toLocaleDateString('id-ID') + ' ' + new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-
-        const opnPayload = {
-          idOpname: ctx.idx !== null ? opnames[ctx.idx].idOpname : `OPN-${Date.now().toString().slice(-4)}`,
-          time: timeNow,
-          bahanName: mat.name,
-          systemStock: mat.stock,
-          physicalStock,
-          difference: diff,
-          note
-        };
-
-        if (ctx.idx !== null && opnames[ctx.idx]) {
-          opnames[ctx.idx] = opnPayload;
-        } else {
-          opnames.unshift(opnPayload);
-          mat.stock = physicalStock;
-          mat.status = mat.stock <= mat.min ? "Kritis" : "Aman";
-        }
-
-        saveLocalState();
-        sendDataToDrive("save_stock_opname", opnPayload);
-        sendDataToDrive("sync_stok_bahan", { inventoryList: inventory });
-        renderOpnames();
-        renderInventory();
-        updateDashboard();
-        closeAppModal();
-        showToast("Stock Opname berhasil disimpan & direkonsiliasi!", "success");
-      }
-      else if (ctx.type === 'expense') {
-        const category = document.getElementById("field-exp-category")?.value || "Operasional";
-        const note = (document.getElementById("field-exp-note")?.value || "").trim();
-        const amount = parseFloat(document.getElementById("field-exp-amount")?.value || 0);
-        const date = document.getElementById("field-exp-date")?.value || new Date().toISOString().split('T')[0];
-
-        if (!note || amount <= 0) return showToast("Keterangan dan nominal pengeluaran wajib diisi!", "error");
-
-        const expPayload = {
-          id: ctx.idx !== null ? expenses[ctx.idx].id : `EXP-${Date.now().toString().slice(-4)}`,
-          date,
-          category,
-          note,
-          amount
-        };
-
-        if (ctx.idx !== null && expenses[ctx.idx]) {
-          expenses[ctx.idx] = expPayload;
-        } else {
-          expenses.unshift(expPayload);
-        }
-
-        saveLocalState();
-        sendDataToDrive("save_pengeluaran", expPayload);
-        renderExpenses();
-        updateDashboard();
-        closeAppModal();
-        showToast("Pengeluaran operasional berhasil dicatat!", "success");
-      }
-      else if (ctx.type === 'user') {
-        const name = (document.getElementById("field-user-name")?.value || "").trim();
-        const username = (document.getElementById("field-user-uname")?.value || "").trim().toLowerCase();
-        const password = (document.getElementById("field-user-pwd")?.value || "123").trim();
-        const role = document.getElementById("field-user-role")?.value || "Kasir / POS";
-
-        if (!name || !username) return showToast("Nama dan username wajib diisi!", "error");
-
-        const userPayload = {
-          id: ctx.idx !== null ? users[ctx.idx].id : Date.now(),
-          name,
-          username,
-          password,
-          role,
-          status: "Aktif"
-        };
-
-        if (ctx.idx !== null && users[ctx.idx]) {
-          users[ctx.idx] = userPayload;
-        } else {
-          users.push(userPayload);
-        }
-
-        saveLocalState();
-        sendDataToDrive("save_user", userPayload);
-        renderUsers();
-        closeAppModal();
-        showToast("Data akun pengguna berhasil disimpan!", "success");
-      }
-      else if (ctx.type === 'promo') {
-        const name = (document.getElementById("field-prm-name")?.value || "").trim();
-        const type = document.getElementById("field-prm-type")?.value || "pct";
-        const valInput = parseFloat(document.getElementById("field-prm-val")?.value || 0);
-
-        if (!name || valInput <= 0) return showToast("Nama promo dan nilai potongan wajib diisi!", "error");
-
-        const val = type === "pct" ? (valInput / 100) : valInput;
-        const prmPayload = {
-          id: ctx.idx !== null ? promos[ctx.idx].id : `p-${Date.now().toString().slice(-4)}`,
-          name,
-          type,
-          val,
-          active: true
-        };
-
-        if (ctx.idx !== null && promos[ctx.idx]) {
-          promos[ctx.idx] = prmPayload;
-        } else {
-          promos.push(prmPayload);
-        }
-
-        saveLocalState();
-        sendDataToDrive("save_diskon_promo", prmPayload);
-        renderPromos();
-        closeAppModal();
-        showToast("Pengaturan promo berhasil disimpan!", "success");
-      }
-      else if (ctx.type === 'category') {
-        const catName = (document.getElementById("field-cat-name")?.value || "").trim();
-        if (!catName) return showToast("Nama kategori wajib diisi!", "error");
-
-        if (ctx.idx !== null && categories[ctx.idx]) {
-          categories[ctx.idx] = catName;
-        } else {
-          if (!categories.includes(catName)) categories.push(catName);
-        }
-
-        saveLocalState();
-        renderCategoryPills();
-        renderCategoriesManage();
-        closeAppModal();
-        showToast("Kategori menu berhasil diperbarui!", "success");
-      }
-      else if (ctx.type === 'recipe') {
-        const productCode = document.getElementById("field-rcp-prod")?.value;
-        if (!productCode) return showToast("Pilih menu produk terlebih dahulu!", "error");
-
-        const rows = document.querySelectorAll(".recipe-ing-row");
-        const items = [];
-
-        rows.forEach(row => {
-          const matSelect = row.querySelector(".rcp-mat-select");
-          const qtyInput = row.querySelector(".rcp-mat-qty");
-          const matId = parseInt(matSelect?.value);
-          const qty = parseFloat(qtyInput?.value || 0);
-
-          if (matId && qty > 0) {
-            const mat = inventory.find(m => m.id === matId);
-            if (mat) {
-              items.push({
-                matId: mat.id,
-                matName: mat.name,
-                qty: qty,
-                unit: mat.unit
-              });
-            }
-          }
-        });
-
-        if (items.length === 0) {
-          return showToast("Tambahkan minimal satu bahan baku dengan takaran yang valid!", "error");
-        }
-
-        const prod = products.find(p => p.code === productCode);
-        const recipePayload = {
-          productCode: productCode,
-          menuName: prod ? prod.name : productCode,
-          items: items
-        };
-
-        if (ctx.idx !== null && recipes[ctx.idx]) {
-          recipes[ctx.idx] = recipePayload;
-        } else {
-          // Gantikan jika resep untuk produk tersebut sudah pernah dibuat sebelumnya
-          const existingIdx = recipes.findIndex(r => r.productCode === productCode);
-          if (existingIdx > -1) {
-            recipes[existingIdx] = recipePayload;
-          } else {
-            recipes.push(recipePayload);
-          }
-        }
-
-        saveLocalState();
-        sendDataToDrive("save_resep_bom", recipePayload);
-        renderRecipes();
-        closeAppModal();
-        showToast("Resep & komposisi BOM berhasil disimpan!", "success");
-      }
-    }
-
-    function openRecipeModal(idx = null) {
-      const isEdit = idx !== null;
-      const r = isEdit ? recipes[idx] : { productCode: products[0]?.code || "", items: [] };
-
-      const prodOptions = products.map(p => `
-        <option value="${p.code}" ${r.productCode === p.code ? 'selected' : ''}>
-          ${p.icon || '🍽️'} ${p.name} (${p.code})
-        </option>
-      `).join('');
-
-      const html = `
-        <div class="space-y-3">
-          <div>
-            <label class="block font-bold text-slate-700 mb-1">Menu Produk</label>
-            <select id="field-rcp-prod" class="w-full border p-2 rounded text-xs bg-white font-medium" ${isEdit ? 'disabled' : ''}>
-              ${prodOptions}
-            </select>
-          </div>
-
-          <div>
-            <div class="flex justify-between items-center mb-1.5">
-              <label class="block font-bold text-slate-700">Komposisi Bahan Baku Dapur</label>
-              <button type="button" onclick="addRecipeIngredientRow()" class="px-2 py-1 bg-amber-500 hover:bg-amber-600 text-slate-950 rounded text-[10px] font-bold flex items-center gap-1 shadow-xs">
-                + Tambah Bahan
-              </button>
-            </div>
-            
-            <div id="recipe-ingredients-list" class="space-y-1.5 max-h-56 overflow-y-auto pr-1">
-              <!-- Baris bahan baku dinamis dimasukkan di sini -->
-            </div>
-          </div>
-        </div>
-      `;
-
-      showAppModal(isEdit ? "Edit Resep / BOM Komposisi" : "Buat Resep / BOM Komposisi Baru", html, { type: 'recipe', idx }, "Simpan Resep");
-
-      // Isi bahan-bahan yang sudah ada atau buat 1 baris awal
-      const container = document.getElementById("recipe-ingredients-list");
-      if (container) {
-        container.innerHTML = "";
-        if (r.items && r.items.length > 0) {
-          r.items.forEach(it => addRecipeIngredientRow(it.matId, it.qty));
-        } else {
-          addRecipeIngredientRow();
-        }
-      }
-    }
-
-    function addRecipeIngredientRow(selectedMatId = null, qty = 0.1) {
-      const container = document.getElementById("recipe-ingredients-list");
-      if (!container) return;
-
-      if (inventory.length === 0) {
-        container.innerHTML = `<p class="text-rose-500 text-[11px] font-medium p-2 bg-rose-50 rounded">Belum ada bahan baku di dapur. Silakan tambahkan di modul Persediaan > Stok Bahan terlebih dahulu.</p>`;
-        return;
-      }
-
-      const defaultMat = selectedMatId ? inventory.find(m => m.id === selectedMatId) : inventory[0];
-      const matOptions = inventory.map(m => `
-        <option value="${m.id}" data-unit="${m.unit}" ${selectedMatId === m.id ? 'selected' : ''}>
-          ${m.name} (${m.unit})
-        </option>
-      `).join('');
-
-      const row = document.createElement("div");
-      row.className = "recipe-ing-row flex items-center gap-2 p-1.5 bg-slate-50 border border-slate-200 rounded-lg";
-      row.innerHTML = `
-        <div class="flex-1">
-          <select onchange="onRecipeMaterialChange(this)" class="rcp-mat-select w-full border border-slate-300 p-1.5 rounded text-xs bg-white font-medium">
-            ${matOptions}
-          </select>
-        </div>
-        <div class="w-24 flex items-center gap-1">
-          <input type="number" step="0.001" min="0.001" value="${qty}" class="rcp-mat-qty w-full border border-slate-300 p-1.5 rounded text-xs font-bold text-center" placeholder="Takaran" />
-          <span class="rcp-mat-unit text-[10px] text-slate-500 font-bold shrink-0">${defaultMat ? defaultMat.unit : 'Kg'}</span>
-        </div>
-        <button type="button" onclick="removeRecipeRow(this)" class="p-1.5 text-rose-500 hover:bg-rose-50 hover:text-rose-700 rounded" title="Hapus Baris">
-          ✕
-        </button>
-      `;
-      container.appendChild(row);
-    }
-
-    function removeRecipeRow(btn) {
-      const row = btn.closest(".recipe-ing-row");
-      if (row) row.remove();
-    }
-
-    function onRecipeMaterialChange(select) {
-      const selectedOption = select.options[select.selectedIndex];
-      const unit = selectedOption.getAttribute("data-unit") || "Kg";
-      const row = select.closest(".recipe-ing-row");
-      if (row) {
-        const unitEl = row.querySelector(".rcp-mat-unit");
-        if (unitEl) unitEl.innerText = unit;
-      }
-    }
-
-    // Modal Triggers for CRUD Features
-    function openProductModal(idx = null) {
-      const isEdit = idx !== null;
-      const p = isEdit ? products[idx] : { code: `MKN-0${products.length + 1}`, name: "", category: "Makanan", hpp: 10000, price: 20000, icon: "🍽️" };
-      const catOptions = categories.filter(c => c !== "Semua").map(c => `<option value="${c}" ${p.category === c ? 'selected' : ''}>${c}</option>`).join('');
-
-      const html = `
-        <div class="space-y-2">
-          <div class="grid grid-cols-3 gap-2">
-            <div>
-              <label class="block font-bold text-slate-700">Kode Menu</label>
-              <input type="text" id="field-prod-code" value="${p.code}" class="w-full border p-1.5 rounded font-mono text-xs" />
-            </div>
-            <div class="col-span-2">
-              <label class="block font-bold text-slate-700">Nama Menu Produk</label>
-              <input type="text" id="field-prod-name" required value="${p.name}" placeholder="Contoh: Waffle Mozzarella Coklat" class="w-full border p-1.5 rounded text-xs" />
-            </div>
-          </div>
-          <div class="grid grid-cols-2 gap-2">
-            <div>
-              <label class="block font-bold text-slate-700">Kategori</label>
-              <select id="field-prod-category" class="w-full border p-1.5 rounded text-xs bg-white">${catOptions}</select>
-            </div>
-            <div>
-              <label class="block font-bold text-slate-700">Ikon / Emoji</label>
-              <input type="text" id="field-prod-icon" value="${p.icon || '🍽️'}" class="w-full border p-1.5 rounded text-xs" />
-            </div>
-          </div>
-          <div class="grid grid-cols-2 gap-2">
-            <div>
-              <label class="block font-bold text-slate-700">Estimasi HPP (Rp)</label>
-              <input type="number" id="field-prod-hpp" value="${p.hpp || 0}" class="w-full border p-1.5 rounded text-xs" />
-            </div>
-            <div>
-              <label class="block font-bold text-slate-700">Harga Jual (Rp)</label>
-              <input type="number" id="field-prod-price" required value="${p.price}" class="w-full border p-1.5 rounded text-xs font-bold text-slate-900" />
-            </div>
-          </div>
-        </div>
-      `;
-      showAppModal(isEdit ? "Edit Menu Produk" : "Tambah Menu Produk Baru", html, { type: 'product', idx });
-    }
-
-    function deleteProduct(idx) {
-      if (!products[idx]) return;
-      showConfirmModal(`Hapus produk "${products[idx].name}"?`, () => {
-        products.splice(idx, 1);
-        saveLocalState();
-        renderProductMaster();
-        renderCatalog();
-        showToast("Produk berhasil dihapus!", "info");
-      });
-    }
-
-    function openSupplierModal(idx = null) {
-      const isEdit = idx !== null;
-      const s = isEdit ? suppliers[idx] : { name: "", category: "Bahan Pokok", phone: "08", address: "Jakarta" };
-      const html = `
-        <div class="space-y-2">
-          <div><label class="block font-bold text-slate-700">Nama Supplier / Vendor</label><input type="text" id="field-sup-name" required value="${s.name}" class="w-full border p-1.5 rounded text-xs" /></div>
-          <div><label class="block font-bold text-slate-700">Kategori Pasokan</label><input type="text" id="field-sup-category" value="${s.category}" class="w-full border p-1.5 rounded text-xs" /></div>
-          <div><label class="block font-bold text-slate-700">No. Telepon / WhatsApp</label><input type="text" id="field-sup-phone" value="${s.phone}" class="w-full border p-1.5 rounded text-xs" /></div>
-          <div><label class="block font-bold text-slate-700">Alamat</label><input type="text" id="field-sup-address" value="${s.address}" class="w-full border p-1.5 rounded text-xs" /></div>
-        </div>
-      `;
-      showAppModal(isEdit ? "Edit Supplier" : "Tambah Supplier Baru", html, { type: 'supplier', idx });
-    }
-
-    function deleteSupplier(idx) {
-      if (!suppliers[idx]) return;
-      showConfirmModal(`Hapus supplier "${suppliers[idx].name}"?`, () => {
-        suppliers.splice(idx, 1);
-        saveLocalState();
-        renderSuppliers();
-        showToast("Supplier dihapus!", "info");
-      });
-    }
-
-    function openMaterialModal(idx = null) {
-      const isEdit = idx !== null;
-      const m = isEdit ? inventory[idx] : { name: "", unit: "Kg", stock: 10, min: 3 };
-      const html = `
-        <div class="space-y-2">
-          <div><label class="block font-bold text-slate-700">Nama Bahan Baku</label><input type="text" id="field-mat-name" required value="${m.name}" placeholder="Contoh: Tepung Premix / Keju Mozzarella" class="w-full border p-1.5 rounded text-xs" /></div>
-          <div class="grid grid-cols-3 gap-2">
-            <div><label class="block font-bold text-slate-700">Satuan</label><input type="text" id="field-mat-unit" value="${m.unit}" placeholder="Kg/Liter/Gram" class="w-full border p-1.5 rounded text-xs" /></div>
-            <div><label class="block font-bold text-slate-700">Stok Saat Ini</label><input type="number" step="0.01" id="field-mat-stock" value="${m.stock}" class="w-full border p-1.5 rounded text-xs" /></div>
-            <div><label class="block font-bold text-slate-700">Batas Min</label><input type="number" step="0.01" id="field-mat-min" value="${m.min}" class="w-full border p-1.5 rounded text-xs" /></div>
-          </div>
-        </div>
-      `;
-      showAppModal(isEdit ? "Edit Bahan Baku" : "Tambah Bahan Baku Dapur", html, { type: 'material', idx });
-    }
-
-    function deleteMaterial(idx) {
-      if (!inventory[idx]) return;
-      showConfirmModal(`Hapus bahan baku "${inventory[idx].name}"?`, () => {
-        inventory.splice(idx, 1);
-        saveLocalState();
-        renderInventory();
-        updateDashboard();
-        showToast("Bahan baku dihapus!", "info");
-      });
-    }
-
-    function openPurchaseModal(idx = null) {
-      const isEdit = idx !== null;
-      const p = isEdit ? purchases[idx] : { supplier: suppliers[0]?.name || "Supplier Utama", bahan: inventory[0]?.name || "Bahan", qty: 5, cost: 100000 };
-      const supOpts = suppliers.map(s => `<option value="${s.name}" ${p.supplier === s.name ? 'selected' : ''}>${s.name}</option>`).join('');
-      const matOpts = inventory.map(m => `<option value="${m.name}" ${p.bahan === m.name ? 'selected' : ''}>${m.name} (${m.unit})</option>`).join('');
-
-      const html = `
-        <div class="space-y-2">
-          <div><label class="block font-bold text-slate-700">Mitra Supplier</label><select id="field-po-supplier" class="w-full border p-1.5 rounded text-xs bg-white">${supOpts}</select></div>
-          <div><label class="block font-bold text-slate-700">Bahan yang Dibeli</label><select id="field-po-bahan" class="w-full border p-1.5 rounded text-xs bg-white">${matOpts}</select></div>
-          <div class="grid grid-cols-2 gap-2">
-            <div><label class="block font-bold text-slate-700">Jumlah / Kuantitas</label><input type="number" step="0.01" id="field-po-qty" required value="${p.qty}" class="w-full border p-1.5 rounded text-xs" /></div>
-            <div><label class="block font-bold text-slate-700">Total Biaya (Rp)</label><input type="number" id="field-po-cost" required value="${p.cost}" class="w-full border p-1.5 rounded text-xs font-bold text-slate-900" /></div>
-          </div>
-        </div>
-      `;
-      showAppModal(isEdit ? "Edit Purchase Order (PO)" : "Input Pembelian Bahan (PO)", html, { type: 'purchase', idx });
-    }
-
-    function deletePurchase(idx) {
-      if (!purchases[idx]) return;
-      showConfirmModal(`Hapus catatan PO "${purchases[idx].noPO}"?`, () => {
-        purchases.splice(idx, 1);
-        saveLocalState();
-        renderPurchases();
-        showToast("Catatan PO dihapus!", "info");
-      });
-    }
-
-    function openStockOpnameModal(idx = null) {
-      const isEdit = idx !== null;
-      const o = isEdit ? opnames[idx] : { bahanName: inventory[0]?.name || "", physicalStock: inventory[0]?.stock || 0, note: "Pengecekan Fisik Mingguan" };
-      const matOpts = inventory.map(m => `<option value="${m.name}" ${o.bahanName === m.name ? 'selected' : ''}>${m.name} (Stok Sistem: ${m.stock} ${m.unit})</option>`).join('');
-
-      const html = `
-        <div class="space-y-2">
-          <div><label class="block font-bold text-slate-700">Pilih Bahan Baku</label><select id="field-opn-bahan" class="w-full border p-1.5 rounded text-xs bg-white">${matOpts}</select></div>
-          <div><label class="block font-bold text-slate-700">Stok Fisik Aktual</label><input type="number" step="0.01" id="field-opn-physical" required value="${o.physicalStock}" class="w-full border p-1.5 rounded text-xs font-bold" /></div>
-          <div><label class="block font-bold text-slate-700">Catatan / Keterangan</label><input type="text" id="field-opn-note" value="${o.note}" class="w-full border p-1.5 rounded text-xs" /></div>
-        </div>
-      `;
-      showAppModal(isEdit ? "Edit Data Opname" : "Input Stock Opname Fisik", html, { type: 'opname', idx });
-    }
-
-    function deleteOpname(idx) {
-      if (!opnames[idx]) return;
-      showConfirmModal(`Hapus log opname "${opnames[idx].idOpname}"?`, () => {
-        opnames.splice(idx, 1);
-        saveLocalState();
-        renderOpnames();
-        showToast("Log stock opname dihapus!", "info");
-      });
-    }
-
-    function openAddExpenseModal(idx = null) {
-      const isEdit = idx !== null;
-      const e = isEdit ? expenses[idx] : { category: "Listrik & Air", note: "", amount: 50000, date: new Date().toISOString().split('T')[0] };
-
-      const html = `
-        <div class="space-y-2">
-          <div><label class="block font-bold text-slate-700">Tanggal Beban</label><input type="date" id="field-exp-date" value="${e.date || ''}" class="w-full border p-1.5 rounded text-xs" /></div>
-          <div>
-            <label class="block font-bold text-slate-700">Kategori Biaya</label>
-            <select id="field-exp-category" class="w-full border p-1.5 rounded text-xs bg-white">
-              <option value="Listrik & Air" ${e.category === 'Listrik & Air' ? 'selected' : ''}>Listrik & Air</option>
-              <option value="Gas Dapur" ${e.category === 'Gas Dapur' ? 'selected' : ''}>Gas Dapur</option>
-              <option value="Gaji Karyawan" ${e.category === 'Gaji Karyawan' ? 'selected' : ''}>Gaji Karyawan</option>
-              <option value="Kemasan & Plastik" ${e.category === 'Kemasan & Plastik' ? 'selected' : ''}>Kemasan & Plastik</option>
-              <option value="Sewa & Pemeliharaan" ${e.category === 'Sewa & Pemeliharaan' ? 'selected' : ''}>Sewa & Pemeliharaan</option>
-              <option value="Lain-lain" ${e.category === 'Lain-lain' ? 'selected' : ''}>Lain-lain</option>
-            </select>
-          </div>
-          <div><label class="block font-bold text-slate-700">Keterangan / Detail</label><input type="text" id="field-exp-note" required value="${e.note || e.description || ''}" placeholder="Contoh: Beli Token Listrik 200rb" class="w-full border p-1.5 rounded text-xs" /></div>
-          <div><label class="block font-bold text-slate-700">Nominal Biaya (Rp)</label><input type="number" id="field-exp-amount" required value="${e.amount}" class="w-full border p-1.5 rounded text-xs font-bold text-rose-600" /></div>
-        </div>
-      `;
-      showAppModal(isEdit ? "Edit Catatan Pengeluaran" : "Catat Beban Operasional", html, { type: 'expense', idx });
-    }
-
-    function deleteExpense(idx) {
-      if (!expenses[idx]) return;
-      showConfirmModal(`Hapus catatan pengeluaran ini?`, () => {
-        expenses.splice(idx, 1);
-        saveLocalState();
-        renderExpenses();
-        updateDashboard();
-        showToast("Catatan pengeluaran dihapus!", "info");
-      });
-    }
-
-    function openUserModal(idx = null) {
-      const isEdit = idx !== null;
-      const u = isEdit ? users[idx] : { name: "", username: "", password: "123", role: "Kasir / POS" };
-      const html = `
-        <div class="space-y-2">
-          <div><label class="block font-bold text-slate-700">Nama Lengkap</label><input type="text" id="field-user-name" required value="${u.name}" class="w-full border p-1.5 rounded text-xs" /></div>
-          <div class="grid grid-cols-2 gap-2">
-            <div><label class="block font-bold text-slate-700">Username Login</label><input type="text" id="field-user-uname" required value="${u.username}" class="w-full border p-1.5 rounded text-xs" /></div>
-            <div><label class="block font-bold text-slate-700">Password</label><input type="text" id="field-user-pwd" required value="${u.password || '123'}" class="w-full border p-1.5 rounded text-xs font-mono" /></div>
-          </div>
-          <div>
-            <label class="block font-bold text-slate-700">Peran Akun (Role)</label>
-            <select id="field-user-role" class="w-full border p-1.5 rounded text-xs bg-white">
-              <option value="Kasir / POS" ${u.role === 'Kasir / POS' ? 'selected' : ''}>Kasir / POS</option>
-              <option value="Admin Gudang & Menu" ${u.role === 'Admin Gudang & Menu' ? 'selected' : ''}>Admin Gudang & Menu</option>
-              <option value="Owner / Super Admin" ${u.role === 'Owner / Super Admin' ? 'selected' : ''}>Owner / Super Admin</option>
-            </select>
-          </div>
-        </div>
-      `;
-      showAppModal(isEdit ? "Edit Akun Pengguna" : "Tambah User Karyawan Baru", html, { type: 'user', idx });
-    }
-
-    function deleteUser(idx) {
-      if (!users[idx]) return;
-      if (users[idx].username === 'owner') return showToast("Akun Owner tidak dapat dihapus!", "error");
-      showConfirmModal(`Hapus akun user "${users[idx].name}"?`, () => {
-        users.splice(idx, 1);
-        saveLocalState();
-        renderUsers();
-        showToast("Akun pengguna dihapus!", "info");
-      });
-    }
-
-    function openPromoModal(idx = null) {
-      const isEdit = idx !== null;
-      const p = isEdit ? promos[idx] : { name: "", type: "pct", val: 0.10 };
-      const displayVal = p.type === "pct" ? (p.val * 100) : p.val;
-
-      const html = `
-        <div class="space-y-2">
-          <div><label class="block font-bold text-slate-700">Nama Voucher / Promo</label><input type="text" id="field-prm-name" required value="${p.name}" placeholder="Contoh: Diskon Karyawan 20%" class="w-full border p-1.5 rounded text-xs" /></div>
-          <div class="grid grid-cols-2 gap-2">
-            <div>
-              <label class="block font-bold text-slate-700">Tipe Potongan</label>
-              <select id="field-prm-type" class="w-full border p-1.5 rounded text-xs bg-white">
-                <option value="pct" ${p.type === 'pct' ? 'selected' : ''}>Persentase (%)</option>
-                <option value="nom" ${p.type === 'nom' ? 'selected' : ''}>Nominal Tetap (Rp)</option>
-              </select>
-            </div>
-            <div>
-              <label class="block font-bold text-slate-700">Nilai (Angka)</label>
-              <input type="number" id="field-prm-val" required value="${displayVal}" placeholder="10 atau 5000" class="w-full border p-1.5 rounded text-xs font-bold" />
-            </div>
-          </div>
-        </div>
-      `;
-      showAppModal(isEdit ? "Edit Promo" : "Tambah Promo Baru", html, { type: 'promo', idx });
-    }
-
-    function togglePromoActive(idx) {
-      if (!promos[idx]) return;
-      promos[idx].active = !promos[idx].active;
-      saveLocalState();
-      renderPromos();
-      showToast(`Promo ${promos[idx].name} diperbarui!`, "info");
-    }
-
-    function deletePromo(idx) {
-      if (!promos[idx]) return;
-      showConfirmModal(`Hapus promo "${promos[idx].name}"?`, () => {
-        promos.splice(idx, 1);
-        saveLocalState();
-        renderPromos();
-        showToast("Promo dihapus!", "info");
-      });
-    }
-
-    function openCategoryModal(idx = null) {
-      const isEdit = idx !== null;
-      const c = isEdit ? categories[idx] : "";
-      const html = `
-        <div>
-          <label class="block font-bold text-slate-700 mb-1">Nama Kategori</label>
-          <input type="text" id="field-cat-name" required value="${c}" placeholder="Contoh: Minuman Boba / Dessert" class="w-full border p-2 rounded text-xs" />
-        </div>
-      `;
-      showAppModal(isEdit ? "Edit Kategori" : "Tambah Kategori Baru", html, { type: 'category', idx });
-    }
-
-    function editCategory(idx) {
-      openCategoryModal(idx);
-    }
-
-    function deleteCategory(idx) {
-      if (!categories[idx]) return;
-      showConfirmModal(`Hapus kategori "${categories[idx]}"?`, () => {
-        categories.splice(idx, 1);
-        saveLocalState();
-        renderCategoryPills();
-        renderCategoriesManage();
-        showToast("Kategori dihapus!", "info");
-      });
-    }
-
-    function editTransaction(idx) {
-      if (!transactions[idx]) return;
-      const t = transactions[idx];
-      const newConsumer = prompt("Ubah keterangan konsumen:", t.consumer);
-      if (newConsumer !== null && newConsumer.trim()) {
-        t.consumer = newConsumer.trim();
-        saveLocalState();
-        renderHistory();
-        showToast("Keterangan transaksi diperbarui!", "success");
-      }
     }
 
     function deleteTransaction(idx) {
@@ -2927,16 +2900,6 @@
         renderHistory();
         updateDashboard();
         showToast("Transaksi telah dibatalkan (void)!", "info");
-      });
-    }
-
-    function deleteRecipe(idx) {
-      if (!recipes[idx]) return;
-      showConfirmModal(`Hapus resep untuk kode "${recipes[idx].productCode}"?`, () => {
-        recipes.splice(idx, 1);
-        saveLocalState();
-        renderRecipes();
-        showToast("Resep BOM dihapus!", "info");
       });
     }
 
@@ -2978,165 +2941,6 @@
       showToast("Matriks hak akses RBAC berhasil disimpan!", "success");
     }
 
-    function saveStoreProfile() {
-      const name = (document.getElementById("cfg-name")?.value || "WAFFELIN MOZZARELA WAFFLE").trim();
-      const addr = (document.getElementById("cfg-address")?.value || "").trim();
-      const tag = document.getElementById("header-outlet-tag");
-      const rcptStore = document.getElementById("rcpt-store");
-      const rcptAddr = document.getElementById("rcpt-addr");
-
-      if (tag) tag.innerText = name;
-      if (rcptStore) rcptStore.innerText = name;
-      if (rcptAddr) rcptAddr.innerText = addr;
-
-      saveLocalState();
-      showToast("Profil usaha kuliner berhasil disimpan!", "success");
-    }
-
-    function saveApiUrl() {
-      const url = (document.getElementById("cfg-script-url")?.value || "").trim();
-      GOOGLE_DRIVE_API_URL = url;
-      saveLocalState();
-      showToast("Endpoint Google Apps Script berhasil disimpan!", "success");
-    }
-
-    function exportBackupJSON() {
-      const payload = {
-        products,
-        inventory,
-        recipes,
-        categories,
-        promos,
-        paymentMethods,
-        suppliers,
-        transactions,
-        purchases,
-        opnames,
-        expenses,
-        users,
-        rolePermissions,
-        exportedAt: new Date().toISOString()
-      };
-      downloadBlob(JSON.stringify(payload, null, 2), `backup-kuliner-pos-${Date.now()}.json`, "application/json");
-      showToast("Backup JSON database berhasil diunduh!", "success");
-    }
-
-    function downloadBlob(content, filename, contentType) {
-      const blob = new Blob([content], { type: contentType });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }
-
-    async function sendDataToDrive(action, payload) {
-      if (!GOOGLE_DRIVE_API_URL || GOOGLE_DRIVE_API_URL.includes("AKfycb...")) return;
-      try {
-        await fetch(GOOGLE_DRIVE_API_URL, {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action, payload })
-        });
-      } catch (err) {
-        console.warn("Gagal mengirim ke Google Drive:", err);
-      }
-    }
-
-    function finishTransaction() {
-      if (cart.length === 0) return showToast("Pilih menu terlebih dahulu!", "error");
-      const { subtotal, tax, disc, total } = calculateCart();
-      const cash = parseFloat(document.getElementById("cash-received")?.value || 0);
-
-      if (paymentMethod === "Tunai" && cash < total) {
-        return showToast("Uang tunai yang diterima masih kurang!", "error");
-      }
-
-      let consumerLabel = "";
-      if (consumerType === "Offline") {
-        const sub = document.getElementById("offline-sub-type")?.value || "Take-Away";
-        const ident = (document.getElementById("offline-identifier")?.value || "Konsumen 01").trim();
-        consumerLabel = `Offline: ${sub} (${ident})`;
-      } else {
-        const plat = document.getElementById("online-platform")?.value || "GoFood";
-        const ident = (document.getElementById("online-identifier")?.value || "Order").trim();
-        consumerLabel = `Online: ${plat} (${ident})`;
-      }
-
-      const orderId = `#ORD-${Math.floor(1000 + Math.random() * 9000)}`;
-      const itemsStr = cart.map(i => `${i.qty}x ${i.name}`).join(", ");
-      const timeNow = new Date().toLocaleDateString('id-ID') + ' ' + new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-
-      // Potong persediaan berdasarkan Resep BOM
-      let orderHPP = 0;
-      cart.forEach(cartItem => {
-        orderHPP += ((cartItem.hpp || 0) * cartItem.qty);
-        const r = recipes.find(rec => rec.productCode === cartItem.code);
-        if (r && Array.isArray(r.items)) {
-          r.items.forEach(bom => {
-            const mat = inventory.find(m => m.name.toLowerCase() === bom.matName.toLowerCase() || m.id === bom.matId);
-            if (mat) {
-              const used = +(bom.qty * cartItem.qty).toFixed(2);
-              mat.stock = Math.max(0, +(mat.stock - used).toFixed(2));
-              mat.status = mat.stock <= mat.min ? "Kritis" : "Aman";
-            }
-          });
-        }
-      });
-
-      const newTrx = {
-        id: orderId,
-        time: timeNow,
-        consumer: consumerLabel,
-        items: itemsStr,
-        pay: paymentMethod,
-        subtotal,
-        tax,
-        disc,
-        total,
-        hpp: orderHPP || Math.round(total * 0.45)
-      };
-
-      transactions.unshift(newTrx);
-      lastOrder = {
-        ...newTrx,
-        cartItems: [...cart],
-        cash: paymentMethod === "Tunai" ? cash : total,
-        chg: paymentMethod === "Tunai" ? Math.max(0, cash - total) : 0
-      };
-
-      // Simpan lokal dan unggah ke cloud Google Sheets
-      saveLocalState();
-      sendDataToDrive("save_transaksi", newTrx);
-      sendDataToDrive("sync_stok_bahan", { inventoryList: inventory });
-
-      clearCart();
-      renderHistory();
-      renderInventory();
-      updateDashboard();
-      closePaymentModal();
-      showReceiptModal();
-      showToast("Transaksi berhasil disimpan!", "success");
-    }
-
-    function openTaxConfigModal() {
-      const taxActive = document.getElementById("cfg-tax-active")?.checked ?? false;
-      const html = `
-        <div class="space-y-2">
-          <p class="text-xs text-slate-600 font-medium">Pengaturan Pajak Restoran Standar (PB1):</p>
-          <label class="flex items-center gap-2 font-bold text-slate-800">
-            <input type="checkbox" id="field-tax-toggle" ${taxActive ? 'checked' : ''} class="rounded text-amber-500" />
-            Aktifkan Pajak Resto PB1 (10%)
-          </label>
-        </div>
-      `;
-      showAppModal("Pengaturan Tarif Pajak", html, { type: 'tax_cfg' }, "Simpan Pajak");
-    }
-
     function exportHistoryCSV() {
       if (transactions.length === 0) return showToast("Tidak ada data transaksi untuk diexport!", "info");
       let csv = "No Bon,Waktu,Konsumen,Menu,Metode Bayar,Subtotal,Pajak,Diskon,Total,HPP\n";
@@ -3157,24 +2961,12 @@
       showToast("Laporan Pembelian CSV berhasil diunduh!", "success");
     }
 
-    // ==================== MASTER LOCAL STORAGE ====================
-    // Simpan semua state ke LocalStorage Perangkat
     function saveLocalState() {
       try {
         const localData = {
-          products,
-          inventory,
-          recipes,
-          categories,
-          promos,
-          paymentMethods,
-          suppliers,
-          transactions,
-          purchases,
-          opnames,
-          expenses,
-          users,
-          rolePermissions,
+          products, inventory, recipes, categories, promos,
+          paymentMethods, suppliers, transactions, purchases,
+          opnames, expenses, users, rolePermissions,
           savedAt: new Date().toISOString()
         };
         localStorage.setItem("KULINER_POS_LOCAL_DATA", JSON.stringify(localData));
@@ -3183,7 +2975,6 @@
       }
     }
 
-    // Muat semua state dari LocalStorage Perangkat saat startup
     function loadLocalState() {
       try {
         const raw = localStorage.getItem("KULINER_POS_LOCAL_DATA");
@@ -3195,21 +2986,13 @@
           if (Array.isArray(parsed.categories)) categories = parsed.categories;
           if (Array.isArray(parsed.promos)) promos = parsed.promos;
           if (Array.isArray(parsed.paymentMethods)) paymentMethods = parsed.paymentMethods;
-          if (Array.isArray(parsed.suppliers)) suppliers = parsed.suppliers;
-          if (Array.isArray(parsed.transactions)) transactions = parsed.transactions;
-          if (Array.isArray(parsed.purchases)) purchases = parsed.purchases;
-          if (Array.isArray(parsed.opnames)) opnames = parsed.opnames;
-          if (Array.isArray(parsed.expenses)) expenses = parsed.expenses;
-          if (Array.isArray(parsed.users) && parsed.users.length > 0) {
+          if (parsed.users && parsed.users.length > 0) {
             const defaultList = [
               { id: 1, name: "Owner Toko", username: "owner", password: "123", role: "Owner / Super Admin", status: "Aktif" },
               { id: 2, name: "Kasir Utama", username: "kasir", password: "123", role: "Kasir / POS", status: "Aktif" },
-              { id: 3, name: "Admin Resto", username: "admin", password: "123", role: "Admin Gudang & Menu", status: "Aktif" }
+              { id: 3, name: "Admin Gudang", username: "admin", password: "123", role: "Admin Gudang & Menu", status: "Aktif" }
             ];
-            let mergedUsers = parsed.users.map(u => ({
-              ...u,
-              password: String(u.password || "123").trim()
-            }));
+            let mergedUsers = parsed.users.map(u => ({ ...u, password: String(u.password || "123").trim() }));
             defaultList.forEach(def => {
               if (!mergedUsers.some(u => u.username && u.username.toLowerCase() === def.username.toLowerCase())) {
                 mergedUsers.push(def);
@@ -3217,16 +3000,35 @@
             });
             users = mergedUsers;
           }
-          if (parsed.rolePermissions) rolePermissions = parsed.rolePermissions;
+          if (parsed.rolePermissions) {
+            rolePermissions = parsed.rolePermissions;
+            if (rolePermissions["Kasir / POS"] && !rolePermissions["Kasir / POS"].includes("printer")) {
+              rolePermissions["Kasir / POS"].push("printer");
+            }
+          }
         }
       } catch (err) {
         console.warn("Gagal memuat dari localStorage:", err);
       }
     }
 
+    async function sendDataToDrive(action, payload) {
+      if (!GOOGLE_DRIVE_API_URL || GOOGLE_DRIVE_API_URL.includes("AKfycb...")) return;
+      try {
+        await fetch(GOOGLE_DRIVE_API_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action, payload })
+        });
+      } catch (err) {
+        console.warn("Gagal mengirim ke Google Drive:", err);
+      }
+    }
+
     async function fetchDataFromDrive(isSilent = false) {
       if (!GOOGLE_DRIVE_API_URL || GOOGLE_DRIVE_API_URL.includes("AKfycb...")) {
-        if (!isSilent) showToast("Endpoint URL Google Apps Script belum dikonfigurasi", "info");
+        if (!isSilent) showToast("Endpoint URL Google Apps Script belum disetel", "info");
         return;
       }
       setSyncStatus("loading", "Menarik data dari Drive...");
@@ -3238,7 +3040,6 @@
         
         if (json && (json.status === "success" || json.data)) {
           const remote = json.data || json;
-          
           if (Array.isArray(remote.products) && remote.products.length > 0) products = remote.products;
           if (Array.isArray(remote.inventory) && remote.inventory.length > 0) inventory = remote.inventory;
           if (Array.isArray(remote.recipes) && remote.recipes.length > 0) recipes = remote.recipes;
@@ -3255,12 +3056,9 @@
             const defaultList = [
               { id: 1, name: "Owner Toko", username: "owner", password: "123", role: "Owner / Super Admin", status: "Aktif" },
               { id: 2, name: "Kasir Utama", username: "kasir", password: "123", role: "Kasir / POS", status: "Aktif" },
-              { id: 3, name: "Admin Resto", username: "admin", password: "123", role: "Admin Gudang & Menu", status: "Aktif" }
+              { id: 3, name: "Admin Gudang", username: "admin", password: "123", role: "Admin Gudang & Menu", status: "Aktif" }
             ];
-            let mergedUsers = remote.users.map(u => ({
-              ...u,
-              password: String(u.password || "123").trim()
-            }));
+            let mergedUsers = remote.users.map(u => ({ ...u, password: String(u.password || "123").trim() }));
             defaultList.forEach(def => {
               if (!mergedUsers.some(u => u.username && u.username.toLowerCase() === def.username.toLowerCase())) {
                 mergedUsers.push(def);
@@ -3268,13 +3066,9 @@
             });
             users = mergedUsers;
           }
-          
           if (remote.rolePermissions) rolePermissions = remote.rolePermissions;
 
-          // Simpan hasil tarikan ke memori lokal perangkat
           saveLocalState();
-
-          // Render ulang seluruh view agar tampilan terkini
           renderCategoryPills();
           renderCatalog();
           renderPromos();
@@ -3306,23 +3100,13 @@
       if (!GOOGLE_DRIVE_API_URL || GOOGLE_DRIVE_API_URL.includes("AKfycb...")) {
         return showToast("Endpoint URL belum disetel!", "error");
       }
-      setSyncStatus("loading", "Mengirim semua database...");
+      setSyncStatus("loading", "Mengirim database...");
       showToast("Mengirim seluruh database ke Google Drive...", "info");
 
       const payload = {
-        products,
-        inventory,
-        recipes,
-        categories,
-        promos,
-        paymentMethods,
-        suppliers,
-        transactions,
-        purchases,
-        opnames,
-        expenses,
-        users,
-        rolePermissions,
+        products, inventory, recipes, categories, promos,
+        paymentMethods, suppliers, transactions, purchases,
+        opnames, expenses, users, rolePermissions,
         syncedAt: new Date().toISOString()
       };
 
@@ -3368,7 +3152,6 @@
       const totalTrx = transactions.length || 1;
       const offPct = Math.round((offCount / totalTrx) * 100);
       const onPct = Math.round((onCount / totalTrx) * 100);
-
       setVal("dash-off-pct", `${offPct}%`);
       setVal("dash-on-pct", `${onPct}%`);
 
@@ -3380,7 +3163,6 @@
       const critCount = inventory.filter(m => m.status === "Kritis").length;
       setVal("dash-critical-count", `${critCount} Item`);
 
-      // Update Tab Keuangan & PnL
       setVal("fin-revenue", `Rp ${omset.toLocaleString("id-ID")}`);
       setVal("fin-cogs", `Rp ${totalHpp.toLocaleString("id-ID")}`);
       setVal("fin-margin", `${marginPct}%`);
@@ -3390,11 +3172,10 @@
       setVal("pnl-exp", `Rp ${totalExp.toLocaleString("id-ID")}`);
       setVal("pnl-net", `Rp ${netProfit.toLocaleString("id-ID")}`);
 
-      // Render Top Products List
       const box = document.getElementById("dash-top-products");
       if (box) {
         if (transactions.length > 0) {
-          const topHtml = `
+          box.innerHTML = `
             <div class="space-y-1.5 text-left text-xs">
               ${transactions.slice(0, 4).map(t => `
                 <div class="p-2 bg-slate-50 border rounded flex justify-between items-center">
@@ -3407,11 +3188,55 @@
               `).join('')}
             </div>
           `;
-          box.innerHTML = topHtml;
         } else {
           box.innerHTML = `<div class="text-slate-400 text-center py-6">Belum ada transaksi penjualan tercatat.</div>`;
         }
       }
+    }
+
+    function saveStoreProfile() {
+      const name = (document.getElementById("cfg-name")?.value || "WAFFELIN MOZZARELA WAFFLE").trim();
+      const addr = (document.getElementById("cfg-address")?.value || "").trim();
+      const tag = document.getElementById("header-outlet-tag");
+      const rcptStore = document.getElementById("rcpt-store");
+      const rcptAddr = document.getElementById("rcpt-addr");
+
+      if (tag) tag.innerText = name;
+      if (rcptStore) rcptStore.innerText = name;
+      if (rcptAddr) rcptAddr.innerText = addr;
+
+      saveLocalState();
+      showToast("Profil usaha kuliner berhasil disimpan!", "success");
+    }
+
+    function saveApiUrl() {
+      const url = (document.getElementById("cfg-script-url")?.value || "").trim();
+      GOOGLE_DRIVE_API_URL = url;
+      saveLocalState();
+      showToast("Endpoint Google Apps Script berhasil disimpan!", "success");
+    }
+
+    function exportBackupJSON() {
+      const payload = {
+        products, inventory, recipes, categories, promos,
+        paymentMethods, suppliers, transactions, purchases,
+        opnames, expenses, users, rolePermissions,
+        exportedAt: new Date().toISOString()
+      };
+      downloadBlob(JSON.stringify(payload, null, 2), `backup-kuliner-pos-${Date.now()}.json`, "application/json");
+      showToast("Backup JSON database berhasil diunduh!", "success");
+    }
+
+    function downloadBlob(content, filename, contentType) {
+      const blob = new Blob([content], { type: contentType });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     }
 
     function showToast(msg, type = 'info') {
@@ -3425,12 +3250,11 @@
       setTimeout(() => { t.remove(); }, 2500);
     }
 
+    // ==================== STARTUP LISTENER ====================
     document.addEventListener("DOMContentLoaded", () => {
-      // 1. Muat database lokal otomatis dari browser untuk respon cepat instan
       loadLocalState();
-
-      // 2. Render seluruh antarmuka dan kontrol data awal
       lucide.createIcons();
+
       renderCategoryPills();
       renderCatalog();
       renderPromos();
@@ -3447,14 +3271,9 @@
       renderAccessMatrix();
       updateDashboard();
 
-      // 3. Sinkronisasi otomatis dari Google Drive saat dibuka di perangkat mana pun
       setTimeout(() => {
         fetchDataFromDrive(true);
       }, 500);
-
-      // Sinkronisasi input field endpoint dengan variabel aktif
-      const scriptInput = document.getElementById("cfg-script-url");
-      if (scriptInput) scriptInput.value = GOOGLE_DRIVE_API_URL;
 
       setInterval(() => {
         const d = new Date();
